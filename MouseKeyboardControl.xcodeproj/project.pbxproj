@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CEE710152D47BF74009470BA /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = CEE710142D47BF74009470BA /* Swifter */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		CE1A36D42D478ACF0005E564 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +33,22 @@
 		CE1A36DD2D478ACF0005E564 /* MouseKeyboardControlUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MouseKeyboardControlUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CEF89F032D47B77300FA21AB /* Exceptions for "MouseKeyboardControl" folder in "MouseKeyboardControl" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CE1A36C12D478ACE0005E564 /* MouseKeyboardControl */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CE1A36C42D478ACE0005E564 /* MouseKeyboardControl */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CEF89F032D47B77300FA21AB /* Exceptions for "MouseKeyboardControl" folder in "MouseKeyboardControl" target */,
+			);
 			path = MouseKeyboardControl;
 			sourceTree = "<group>";
 		};
@@ -52,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEE710152D47BF74009470BA /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +96,7 @@
 				CE1A36C42D478ACE0005E564 /* MouseKeyboardControl */,
 				CE1A36D62D478ACF0005E564 /* MouseKeyboardControlTests */,
 				CE1A36E02D478ACF0005E564 /* MouseKeyboardControlUITests */,
+				CEE710132D47BF74009470BA /* Frameworks */,
 				CE1A36C32D478ACE0005E564 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +109,13 @@
 				CE1A36DD2D478ACF0005E564 /* MouseKeyboardControlUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CEE710132D47BF74009470BA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +138,7 @@
 			);
 			name = MouseKeyboardControl;
 			packageProductDependencies = (
+				CEE710142D47BF74009470BA /* Swifter */,
 			);
 			productName = MouseKeyboardControl;
 			productReference = CE1A36C22D478ACE0005E564 /* MouseKeyboardControl.app */;
@@ -195,6 +222,9 @@
 			);
 			mainGroup = CE1A36B92D478ACE0005E564;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				CEF89F072D47BF2B00FA21AB /* XCRemoteSwiftPackageReference "swifter" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE1A36C32D478ACE0005E564 /* Products */;
 			projectDirPath = "";
@@ -553,6 +583,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		CEF89F072D47BF2B00FA21AB /* XCRemoteSwiftPackageReference "swifter" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/httpswift/swifter.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CEE710142D47BF74009470BA /* Swifter */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEF89F072D47BF2B00FA21AB /* XCRemoteSwiftPackageReference "swifter" */;
+			productName = Swifter;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CE1A36BA2D478ACE0005E564 /* Project object */;
 }

@@ -22,5 +22,16 @@
     <string>1</string>
     <key>LSMinimumSystemVersion</key>
     <string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+    <key>NSLocalNetworkUsageDescription</key>
+    <string>需要访问本地网络以启动HTTP服务器</string>
+    <key>NSBonjourServices</key>
+    <array>
+        <string>_http._tcp</string>
+    </array>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsLocalNetworking</key>
+        <true/>
+    </dict>
 </dict>
 </plist> 
