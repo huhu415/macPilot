@@ -37,6 +37,7 @@ struct ContentView: View {
                 let screenFrame = NSScreen.main?.frame ?? .zero
                 let centerPoint = CGPoint(
                     x: screenFrame.width / 2, y: screenFrame.height / 2)
+                print("移动鼠标到屏幕中心: \(centerPoint)")
                 InputControl.moveMouse(to: centerPoint)
             }
 

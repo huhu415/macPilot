@@ -36,6 +36,18 @@ class ServerManager {
             return HttpResponse.ok(.text(jsonString))
         }
 
+        // x和y是逻辑坐标, 不是真实的屏幕分辨率坐标, 可以是int或string
+        server?["/move_mouse"] = { request in
+            let bodyData = Data(request.body)
+            let json = try? JSONSerialization.jsonObject(with: bodyData) as? [String: Any]
+            // 处理字符串或数字类型的坐标值
+            let x = (json?["x"] as? Int) ?? (json?["x"] as? String).flatMap(Int.init)
+            let y = (json?["y"] as? Int) ?? (json?["y"] as? String).flatMap(Int.init)
+
+            InputControl.moveMouse(to: CGPoint(x: x ?? 0, y: y ?? 0))
+            return .ok(.text("Mouse moved to \(x ?? 0), \(y ?? 0)"))
+        }
+
         // 添加截图路由
         server?["/screenshot"] = { request in
             let semaphore = DispatchSemaphore(value: 0)
@@ -126,20 +138,38 @@ class ServerManager {
                 .data(jsonData, contentType: "application/json"))
         }
 
-        // 添加打开应用的路由
+        // 添加打开应用的路由, type bundleId or appName, value xxxx
         server?["/open_app"] = { request in
             let bodyData = Data(request.body)
-
-            // 处理json, 并且转换成url
             guard
-                let json = try? JSONSerialization.jsonObject(with: bodyData)
-                    as? [String: Any],
-                let bundleIdentifier = json["bundleIdentifier"] as? String,
-                let appUrl = NSWorkspace.shared.urlForApplication(
-                    withBundleIdentifier: bundleIdentifier)
+                let json = try? JSONSerialization.jsonObject(
+                    with: bodyData, options: []) as? [String: Any],
+                let type = json["type"] as? String,
+                let value = json["value"] as? String
             else {
-                return .badRequest(
-                    .text("Invalid request format or application not found"))
+                return .badRequest(.text("Invalid request format"))
+            }
+
+            let bundleIdValueEnd: String?
+
+            switch type {
+            case "bundleId":
+                bundleIdValueEnd = value
+            case "appName":
+                let apps = getInstalledApplications()
+                bundleIdValueEnd = apps.first {
+                    $0.name.lowercased() == value.lowercased()
+                }?.bundleId
+
+                guard bundleIdValueEnd != nil else {
+                    return .badRequest(.text("Application not found: \(value)"))
+                }
+            default:
+                return .badRequest(.text("Invalid request format"))
+            }
+
+            guard let appUrl = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdValueEnd!) else {
+                return .badRequest(.text("Application URL not found for identifier: \(bundleIdValueEnd!)"))
             }
 
             NSWorkspace.shared.openApplication(
