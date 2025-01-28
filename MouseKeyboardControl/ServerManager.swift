@@ -77,7 +77,8 @@ class ServerManager {
             guard
                 let json =
                     (try? JSONSerialization.jsonObject(
-                        with: bodyData, options: [.allowFragments])) as? [String: Any],
+                        with: bodyData, options: [.allowFragments]))
+                    as? [String: Any],
                 let command = json["command"] as? String
             else {
                 return .badRequest(.text("Invalid request body"))
@@ -112,13 +113,62 @@ class ServerManager {
                 response["error"] = error.localizedDescription
             }
 
-            guard let jsonData = try? JSONSerialization.data(withJSONObject: response) else {
+            guard
+                let jsonData = try? JSONSerialization.data(
+                    withJSONObject: response)
+            else {
                 return .internalServerError
             }
 
             print(jsonData)
 
-            return HttpResponse.ok(.data(jsonData, contentType: "application/json"))
+            return HttpResponse.ok(
+                .data(jsonData, contentType: "application/json"))
+        }
+
+        // 添加打开应用的路由
+        server?["/open_app"] = { request in
+            let bodyData = Data(request.body)
+
+            // 处理json, 并且转换成url
+            guard
+                let json = try? JSONSerialization.jsonObject(with: bodyData)
+                    as? [String: Any],
+                let bundleIdentifier = json["bundleIdentifier"] as? String,
+                let appUrl = NSWorkspace.shared.urlForApplication(
+                    withBundleIdentifier: bundleIdentifier)
+            else {
+                return .badRequest(
+                    .text("Invalid request format or application not found"))
+            }
+
+            NSWorkspace.shared.openApplication(
+                at: appUrl, configuration: NSWorkspace.OpenConfiguration()
+            ) { app, error in
+                if let error = error {
+                    print("打开应用失败: \(error.localizedDescription)")
+                } else {
+                    print("成功打开应用: \(app?.bundleIdentifier ?? "")")
+                }
+            }
+
+            return .ok(.text("Application launch request received"))
+        }
+
+        // 添加获取应用列表的路由
+        server?["/list_apps"] = { request in
+            let apps = getInstalledApplications()
+            let appList = apps.map {
+                ["name": $0.name, "bundleId": $0.bundleId]
+            }
+
+            guard
+                let jsonData = try? JSONSerialization.data(
+                    withJSONObject: appList)
+            else {
+                return .internalServerError
+            }
+            return .ok(.data(jsonData, contentType: "application/json"))
         }
 
         // 添加错误处理和日志
@@ -129,4 +179,48 @@ class ServerManager {
             print("服务器启动失败：\(error.localizedDescription)")
         }
     }
+}
+
+// 新增应用信息结构体和获取方法
+private struct AppInfo {
+    let name: String
+    let bundleId: String
+}
+
+private func getInstalledApplications() -> [AppInfo] {
+    var apps = [AppInfo]()
+
+    // 搜索系统应用目录和用户应用目录
+    let searchPaths = [
+        "/Applications",
+        "/System/Applications",
+        NSHomeDirectory() + "/Applications",
+    ]
+
+    for path in searchPaths {
+        guard
+            let contents = try? FileManager.default.contentsOfDirectory(
+                atPath: path)
+        else { continue }
+
+        for item in contents where item.hasSuffix(".app") {
+            let appPath = URL(fileURLWithPath: path).appendingPathComponent(
+                item)
+            let plistPath = appPath.appendingPathComponent(
+                "Contents/Info.plist")
+
+            guard let plistData = try? Data(contentsOf: plistPath),
+                let plist = try? PropertyListSerialization.propertyList(
+                    from: plistData, options: [], format: nil)
+                    as? [String: Any],
+                let bundleId = plist["CFBundleIdentifier"] as? String,
+                let name = plist["CFBundleName"] as? String ?? plist[
+                    "CFBundleExecutable"] as? String
+            else { continue }
+
+            apps.append(AppInfo(name: name, bundleId: bundleId))
+        }
+    }
+
+    return apps.sorted { $0.name < $1.name }
 }
