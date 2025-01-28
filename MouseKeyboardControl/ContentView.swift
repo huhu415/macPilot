@@ -25,6 +25,8 @@ struct ContentView: View {
     @State private var mousePosition: CGPoint = .zero
     @State private var stream: SCStream?
     @State private var screenCaptureManager = ScreenCaptureManager()
+    @State private var screenshotImage: NSImage?  // 新增状态用于存储截图
+    @State private var errorMessage = ""         // 新增状态用于错误信息
     private let serialQueue = DispatchQueue(label: "com.screenshot.serial")
 
     var body: some View {
@@ -49,6 +51,20 @@ struct ContentView: View {
             Button("截取屏幕") {
                 takeScreenshot()
             }
+
+            // 新增截图显示区域
+            Group {
+                if let screenshotImage = screenshotImage {
+                    Image(nsImage: screenshotImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 300)
+                } else if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                }
+            }
+            .padding()
         }
         .padding()
         .onAppear {
@@ -61,8 +77,20 @@ struct ContentView: View {
         }
     }
 
-    func takeScreenshot() {
-        screenCaptureManager.captureFullScreen()
+    func takeScreenshot() {        
+        screenCaptureManager.captureFullScreen { image in
+            DispatchQueue.main.async {
+                if let image = image {
+                    screenshotImage = image
+                    errorMessage = ""
+                    print("截图成功，尺寸: \(image.size)")
+                } else {
+                    screenshotImage = nil
+                    errorMessage = "截图失败，请检查权限设置"
+                    print("截图失败: 无法获取有效图像")
+                }
+            }
+        }
     }
 }
 
@@ -70,19 +98,25 @@ struct ContentView: View {
 class ScreenCaptureManager: NSObject, SCStreamDelegate, SCStreamOutput {
     private var stream: SCStream?  // 这是一个可选类型的属性
     private var hasProcessedFrame = false  // 添加标志位来追踪是否已处理过帧
+    private var completionHandler: ((NSImage?) -> Void)?
 
-    func captureFullScreen() {
+    // 捕获全屏截图
+    func captureFullScreen(completion: @escaping (NSImage?) -> Void) {
+        self.completionHandler = completion
+        
         SCShareableContent.getWithCompletionHandler {
             [weak self] content, error in
             guard let self = self else { return }
 
             if let error = error {
                 print("获取共享内容失败: \(error.localizedDescription)")
+                self.completionHandler?(nil)
                 return
             }
 
             guard let content = content, !content.displays.isEmpty else {
                 print("未找到可用的显示器")
+                self.completionHandler?(nil)
                 return
             }
 
@@ -112,10 +146,12 @@ class ScreenCaptureManager: NSObject, SCStreamDelegate, SCStreamOutput {
             } catch {
                 print("创建流失败: \(error.localizedDescription)")
                 self.stream = nil
+                self.completionHandler?(nil)
             }
         }
     }
 
+    // 处理捕获到的帧, 这是回调
     func stream(
         _ stream: SCStream, didOutputSampleBuffer sampleBuffer: CMSampleBuffer,
         of type: SCStreamOutputType
@@ -123,59 +159,21 @@ class ScreenCaptureManager: NSObject, SCStreamDelegate, SCStreamOutput {
         guard type == .screen && !hasProcessedFrame else { return }
 
         if let image = NSImage(from: sampleBuffer) {
-            hasProcessedFrame = true  // 设置标志位
-            self.saveImage(image)
+            hasProcessedFrame = true
+            self.completionHandler?(image)
             stream.stopCapture { [weak self] error in
                 if let error = error {
                     print("停止捕获失败: \(error)")
                 }
                 self?.stream = nil
-                self?.hasProcessedFrame = false  // 重置标志位
-            }
-        }
-    }
-
-    private func saveImage(_ image: NSImage) {
-        guard
-            let desktopURL = FileManager.default.urls(
-                for: .desktopDirectory, in: .userDomainMask
-            ).first
-        else {
-            print("无法获取桌面路径")
-            return
-        }
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd_HHmmss"
-        let filename = "screenshot_\(formatter.string(from: Date())).png"
-        let fileURL = desktopURL.appendingPathComponent(filename)
-
-        // 使用更高质量的图片转换方法
-        if let cgImage = image.cgImage(
-            forProposedRect: nil, context: nil, hints: nil)
-        {
-            let bitmapRep = NSBitmapImageRep(cgImage: cgImage)
-            bitmapRep.size = image.size  // 保持原始尺寸
-
-            guard
-                let pngData = bitmapRep.representation(
-                    using: .png, properties: [.compressionFactor: 1.0])
-            else {
-                print("图片转换失败")
-                return
-            }
-
-            do {
-                try pngData.write(to: fileURL)
-                print("截图已保存至：\(fileURL.path)")
-            } catch {
-                print("保存失败: \(error.localizedDescription)")
+                self?.hasProcessedFrame = false
+                self?.completionHandler = nil
             }
         }
     }
 }
 
-// NSImage扩展保持不变
+// 处理CMSampleBuffer
 extension NSImage {
     convenience init?(from sampleBuffer: CMSampleBuffer) {
         guard let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)
