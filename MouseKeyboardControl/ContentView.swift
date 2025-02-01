@@ -19,6 +19,8 @@ enum KeyCode: CGKeyCode {
     case rightArrow = 124
     case upArrow = 126
     case downArrow = 125
+    case c = 8
+    case v = 9
 }
 
 struct ContentView: View {
@@ -26,7 +28,7 @@ struct ContentView: View {
     @State private var stream: SCStream?
     @State private var screenCaptureManager = ScreenCaptureManager()
     @State private var screenshotImage: NSImage?  // 新增状态用于存储截图
-    @State private var errorMessage = ""         // 新增状态用于错误信息
+    @State private var errorMessage = ""  // 新增状态用于错误信息
     private let serialQueue = DispatchQueue(label: "com.screenshot.serial")
 
     var body: some View {
@@ -43,10 +45,6 @@ struct ContentView: View {
 
             Button("模拟鼠标点击") {
                 InputControl.mouseClick(at: mousePosition)
-            }
-
-            Button("按下空格键") {
-                InputControl.pressKey(keyCode: 49)  // 49是空格键的键码
             }
 
             Button("截取屏幕") {
@@ -78,7 +76,7 @@ struct ContentView: View {
         }
     }
 
-    func takeScreenshot() {        
+    func takeScreenshot() {
         screenCaptureManager.captureFullScreen { image in
             DispatchQueue.main.async {
                 if let image = image {

@@ -11,7 +11,7 @@ class ServerManager {
     func startServer() {
         server = HttpServer()
 
-        // 添加获取鼠标位置的路由
+        // GEY 获取鼠标位置, x和y是逻辑坐标, screen里面的就是屏幕的真实分辨率和缩放比例
         server?["/cursor_position"] = { request in
             let position = InputControl.getCurrentMousePosition()
             let mainScreen = NSScreen.main
@@ -36,19 +36,55 @@ class ServerManager {
             return HttpResponse.ok(.text(jsonString))
         }
 
-        // x和y是逻辑坐标, 不是真实的屏幕分辨率坐标, 可以是int或string
+        // POST 移动鼠标位置. x和y是逻辑坐标, 不是真实的屏幕分辨率坐标, 可以是int或string
         server?["/move_mouse"] = { request in
             let bodyData = Data(request.body)
-            let json = try? JSONSerialization.jsonObject(with: bodyData) as? [String: Any]
+            let json =
+                try? JSONSerialization.jsonObject(with: bodyData)
+                as? [String: Any]
             // 处理字符串或数字类型的坐标值
-            let x = (json?["x"] as? Int) ?? (json?["x"] as? String).flatMap(Int.init)
-            let y = (json?["y"] as? Int) ?? (json?["y"] as? String).flatMap(Int.init)
+            let x =
+                (json?["x"] as? Int)
+                ?? (json?["x"] as? String).flatMap(Int.init)
+            let y =
+                (json?["y"] as? Int)
+                ?? (json?["y"] as? String).flatMap(Int.init)
 
             InputControl.moveMouse(to: CGPoint(x: x ?? 0, y: y ?? 0))
             return .ok(.text("Mouse moved to \(x ?? 0), \(y ?? 0)"))
         }
 
-        // 添加截图路由
+        // POST 把json中text字段的内容粘贴到光标位置
+        server?["/paste"] = { request in
+            let bodyData = Data(request.body)
+            guard
+                let json =
+                    (try? JSONSerialization.jsonObject(with: bodyData)
+                        as? [String: String]),
+                let text = json["text"]
+            else {
+                return .badRequest(
+                    .text("Invalid request format or missing 'text' field"))
+            }
+
+            print("粘贴内容: \(text)")
+            sleep(2)
+
+            // 把文本放到剪贴板
+            let pasteboard = NSPasteboard.general
+            pasteboard.declareTypes([.string], owner: nil)
+            pasteboard.setString(text, forType: .string)
+
+            // 粘贴到光标位置
+            InputControl.pressKeys(
+                modifiers: .maskCommand,
+                keyCodes: KeyCode.v.rawValue
+            )
+
+            return .ok(.text("Pasted"))
+        }
+
+        // GET 截图
         server?["/screenshot"] = { request in
             let semaphore = DispatchSemaphore(value: 0)
             var screenshotData: Data?
@@ -83,7 +119,7 @@ class ServerManager {
             return response
         }
 
-        // 添加执行命令的POST接口
+        // POST 里面command字段的命令, args是可选的参数数组
         server?["/execute"] = { request in
             let bodyData = Data(request.body)
             guard
@@ -138,7 +174,7 @@ class ServerManager {
                 .data(jsonData, contentType: "application/json"))
         }
 
-        // 添加打开应用的路由, type bundleId or appName, value xxxx
+        // POST 打开应用的路由, type: bundleId or appName, value: xxxx
         server?["/open_app"] = { request in
             let bodyData = Data(request.body)
             guard
@@ -157,9 +193,10 @@ class ServerManager {
                 bundleIdValueEnd = value
             case "appName":
                 let apps = getInstalledApplications()
-                bundleIdValueEnd = apps.first {
-                    $0.name.lowercased() == value.lowercased()
-                }?.bundleId
+                bundleIdValueEnd =
+                    apps.first {
+                        $0.name.lowercased() == value.lowercased()
+                    }?.bundleId
 
                 guard bundleIdValueEnd != nil else {
                     return .badRequest(.text("Application not found: \(value)"))
@@ -168,8 +205,14 @@ class ServerManager {
                 return .badRequest(.text("Invalid request format"))
             }
 
-            guard let appUrl = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdValueEnd!) else {
-                return .badRequest(.text("Application URL not found for identifier: \(bundleIdValueEnd!)"))
+            guard
+                let appUrl = NSWorkspace.shared.urlForApplication(
+                    withBundleIdentifier: bundleIdValueEnd!)
+            else {
+                return .badRequest(
+                    .text(
+                        "Application URL not found for identifier: \(bundleIdValueEnd!)"
+                    ))
             }
 
             NSWorkspace.shared.openApplication(
@@ -185,7 +228,7 @@ class ServerManager {
             return .ok(.text("Application launch request received"))
         }
 
-        // 添加获取应用列表的路由
+        // GET 获取应用列表
         server?["/list_apps"] = { request in
             let apps = getInstalledApplications()
             let appList = apps.map {
