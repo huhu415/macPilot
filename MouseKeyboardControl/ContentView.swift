@@ -43,8 +43,12 @@ struct ContentView: View {
                 InputControl.moveMouse(to: centerPoint)
             }
 
-            Button("模拟鼠标点击") {
-                InputControl.mouseClick(at: mousePosition)
+            Button("鼠标点击屏幕中心(延迟1s)") {
+                sleep(1)
+                let screenFrame = NSScreen.main?.frame ?? .zero
+                let centerPoint = CGPoint(
+                    x: screenFrame.width / 2, y: screenFrame.height / 2)
+                InputControl.mouseClick(at: centerPoint)
             }
 
             Button("截取屏幕") {

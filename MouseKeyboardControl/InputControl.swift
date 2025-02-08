@@ -3,6 +3,11 @@ import ApplicationServices
 import Foundation
 
 class InputControl {
+    // 获取当前鼠标位置
+    static func getCurrentMousePosition() -> CGPoint {
+        return NSEvent.mouseLocation
+    }
+
     // 移动鼠标到指定位置
     static func moveMouse(to point: CGPoint) {
         let moveEvent = CGEvent(
@@ -11,17 +16,34 @@ class InputControl {
         moveEvent?.post(tap: .cghidEventTap)
     }
 
-    // 模拟鼠标点击
-    static func mouseClick(at point: CGPoint) {
-        let clickDown = CGEvent(
-            mouseEventSource: nil, mouseType: .leftMouseDown,
-            mouseCursorPosition: point, mouseButton: .left)
-        let clickUp = CGEvent(
-            mouseEventSource: nil, mouseType: .leftMouseUp,
-            mouseCursorPosition: point, mouseButton: .left)
+    // 模拟鼠标点击（新增 button 参数，默认左键）
+    static func mouseClick(
+        at point: CGPoint, button: CGMouseButton = .left, clickCount: Int = 1
+    ) {
+        // 根据按钮类型选择对应的事件类型
+        let downEventType: CGEventType =
+            (button == .left) ? .leftMouseDown : .rightMouseDown
+        let upEventType: CGEventType =
+            (button == .left) ? .leftMouseUp : .rightMouseUp
 
-        clickDown?.post(tap: .cghidEventTap)
-        clickUp?.post(tap: .cghidEventTap)
+        // 循环执行点击次数
+        for _ in 0..<clickCount {
+            let clickDown = CGEvent(
+                mouseEventSource: nil,
+                mouseType: downEventType,
+                mouseCursorPosition: point,
+                mouseButton: button
+            )
+            let clickUp = CGEvent(
+                mouseEventSource: nil,
+                mouseType: upEventType,
+                mouseCursorPosition: point,
+                mouseButton: button
+            )
+
+            clickDown?.post(tap: .cghidEventTap)
+            clickUp?.post(tap: .cghidEventTap)
+        }
     }
 
     // 模拟键盘按键
@@ -33,11 +55,6 @@ class InputControl {
 
         keyDown?.post(tap: .cghidEventTap)
         keyUp?.post(tap: .cghidEventTap)
-    }
-
-    // 获取当前鼠标位置
-    static func getCurrentMousePosition() -> CGPoint {
-        return NSEvent.mouseLocation
     }
 
     // 模拟组合按键（如 Command + C）

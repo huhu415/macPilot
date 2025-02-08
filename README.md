@@ -25,6 +25,7 @@
 
 ### 鼠标控制
 - `GET /cursor_position` - 获取当前鼠标位置和屏幕信息
+- `GET /click_mouse` - 点击鼠标
 - `POST /move_mouse` - 移动鼠标到指定位置
   ```json
   {

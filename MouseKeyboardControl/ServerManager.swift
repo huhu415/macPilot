@@ -54,6 +54,12 @@ class ServerManager {
             return .ok(.text("Mouse moved to \(x ?? 0), \(y ?? 0)"))
         }
 
+        // GET 点击鼠标
+        server?["/click_mouse"] = { request in
+            InputControl.mouseClick(at: InputControl.getCurrentMousePosition())
+            return .ok(.text("Mouse clicked"))
+        }
+
         // POST 把json中text字段的内容粘贴到光标位置
         server?["/paste"] = { request in
             let bodyData = Data(request.body)
