@@ -11,6 +11,11 @@ class ServerManager {
     func startServer() {
         server = HttpServer()
 
+        // GET ping-pong
+        server?["/ping"] = { request in
+            return .ok(.text("pong\n"))
+        }
+
         // GEY 获取鼠标位置, x和y是逻辑坐标, screen里面的就是屏幕的真实分辨率和缩放比例
         server?["/cursor_position"] = { request in
             let position = InputControl.getCurrentMousePosition()
