@@ -28,8 +28,9 @@ struct ContentView: View {
     @State private var stream: SCStream?
     @State private var screenCaptureManager = ScreenCaptureManager()
     @State private var screenshotImage: NSImage?  // 新增状态用于存储截图
-    @State private var errorMessage = ""  // 新增状态用于错误信息
-    private let serialQueue = DispatchQueue(label: "com.screenshot.serial")
+    @State private var errorMessage: String = ""  // 新增状态用于错误信息
+    @State private var isServerHealthy: Bool = false
+    @State private var showServerAlert: Bool = false
 
     var body: some View {
         VStack(spacing: 20) {
@@ -49,6 +50,16 @@ struct ContentView: View {
                 let centerPoint = CGPoint(
                     x: screenFrame.width / 2, y: screenFrame.height / 2)
                 InputControl.mouseClick(at: centerPoint)
+            }
+
+            Button("检查服务器状态") {
+                checkServerStatus()
+            }.alert(isPresented: $showServerAlert) {
+                Alert(
+                    title: Text(verbatim: ""),
+                    message: Text(isServerHealthy ? "✅ 服务正常" : "❌ 服务异常"),
+                    dismissButton: .default(Text("知道了"))
+                )
             }
 
             Button("截取屏幕") {
@@ -72,7 +83,13 @@ struct ContentView: View {
         .padding()
         .onAppear {
             // 启动 HTTP 服务器
-            ServerManager.shared.startServer()
+            let server = ServerManager.shared.serverInit()
+            do {
+                try server?.start(8080)
+                print("✅ 服务器启动成功")
+            } catch {
+                print("❌ 服务器启动失败: \(error.localizedDescription)")
+            }
 
             Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
                 mousePosition = InputControl.getCurrentMousePosition()
@@ -94,6 +111,34 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    // 新增服务器状态检查方法
+    func checkServerStatus() {
+        guard let url = URL(string: "http://localhost:8080/ping") else {
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            DispatchQueue.main.async {
+                // 在请求完成后设置弹窗触发状态
+                self.showServerAlert = true
+
+                if let error: any Error = error {
+                    print("服务器检查失败: \(error.localizedDescription)")
+                    self.isServerHealthy = false
+                    return
+                }
+
+                if let httpResponse: HTTPURLResponse = response
+                    as? HTTPURLResponse, httpResponse.statusCode == 200
+                {
+                    self.isServerHealthy = true
+                } else {
+                    self.isServerHealthy = false
+                }
+            }
+        }.resume()
     }
 }
 

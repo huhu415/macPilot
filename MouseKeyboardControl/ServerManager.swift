@@ -3,12 +3,12 @@ import Foundation
 import Swifter
 
 class ServerManager {
-    static let shared = ServerManager()
+    static let shared: ServerManager = ServerManager()
     private var server: HttpServer?
 
     private init() {}
 
-    func startServer() {
+    func serverInit() -> HttpServer? {
         server = HttpServer()
 
         // GET ping-pong
@@ -255,13 +255,7 @@ class ServerManager {
             return .ok(.data(jsonData, contentType: "application/json"))
         }
 
-        // 添加错误处理和日志
-        do {
-            try server?.start(8080)
-            print("服务器成功启动在端口 8080")
-        } catch {
-            print("服务器启动失败：\(error.localizedDescription)")
-        }
+        return server
     }
 }
 
