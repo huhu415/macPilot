@@ -31,6 +31,7 @@ struct ContentView: View {
     @State private var errorMessage: String = ""  // 新增状态用于错误信息
     @State private var isServerHealthy: Bool = false
     @State private var showServerAlert: Bool = false
+    @State private var accessibilityInfo: String = "" // 新增状态变量
 
     var body: some View {
         VStack(spacing: 20) {
@@ -65,6 +66,20 @@ struct ContentView: View {
             Button("截取屏幕") {
                 takeScreenshot()
             }
+
+            Button("获取当前窗口信息") {
+                getCurrentWindowInfo()
+            }
+
+            // 显示 Accessibility 信息
+            ScrollView {
+                Text(accessibilityInfo)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
+            }
+            .frame(height: 200)
 
             // 新增截图显示区域
             Group {
@@ -139,6 +154,106 @@ struct ContentView: View {
                 }
             }
         }.resume()
+    }
+
+    // 新增获取窗口信息的方法
+    private func getCurrentWindowInfo() {
+        let systemWideElement = AXUIElementCreateSystemWide()
+        var focusedElement: AnyObject?
+        let result = AXUIElementCopyAttributeValue(systemWideElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
+        if result == .success {
+            // // 获取焦点元素的标题
+            // var title: AnyObject?
+            // AXUIElementCopyAttributeNames(
+            //     focusedElement as! AXUIElement,
+            //     kAXTitleAttribute as CFString,
+            //     &title
+            // )
+            
+            // 获取所有可用的属性名称
+            var attributeNames: CFArray?
+            AXUIElementCopyAttributeNames(focusedElement as! AXUIElement, &attributeNames)
+
+            for attributeName in attributeNames as? [CFString] ?? [] {
+                var value: AnyObject?
+                let result = AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, attributeName, &value)
+                if result == .success {
+                    print("属性名称: \(attributeName), 值: \(value)")
+                }
+            }
+
+            var children: AnyObject?
+            AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, kAXChildrenAttribute as CFString, &children)
+            if let childrenArray = children as? [AXUIElement] {
+                for (index, child) in childrenArray.enumerated() {
+                    print("\n--- 子元素 #\(index + 1) ---")
+                    
+                    // 获取角色
+                    var role: AnyObject?
+                    AXUIElementCopyAttributeValue(child, kAXRoleAttribute as CFString, &role)
+                    print("角色: \(role)")
+                    
+                    // 获取标题
+                    var title: AnyObject?
+                    AXUIElementCopyAttributeValue(child, kAXTitleAttribute as CFString, &title)
+                    print("标题: \(title)")
+                    
+                    // 获取描述
+                    var description: AnyObject?
+                    AXUIElementCopyAttributeValue(child, kAXDescriptionAttribute as CFString, &description)
+                    print("描述: \(description)")
+                    
+                    // 获取值
+                    var value: AnyObject?
+                    AXUIElementCopyAttributeValue(child, kAXValueAttribute as CFString, &value)
+                    print("值: \(value)")
+                    
+                    // 获取所有属性名称
+                    var attributeNames: CFArray?
+                    AXUIElementCopyAttributeNames(child, &attributeNames)
+                    print("所有属性: \(attributeNames ?? [] as CFArray)")
+                }
+
+             // 获取第一个 AXGroup 元素
+            let firstGroup = childrenArray[0]
+            
+            // 获取 AXGroup 的子元素
+            var groupChildren: AnyObject?
+            AXUIElementCopyAttributeValue(firstGroup, kAXChildrenAttribute as CFString, &groupChildren)
+            
+            if let groupChildrenArray = groupChildren as? [AXUIElement] {
+                print("\n=== AXGroup 的子元素 ===")
+                for (index, groupChild) in groupChildrenArray.enumerated() {
+                    print("\n--- 子元素 #\(index + 1) ---")
+                    
+                    // 获取角色
+                    var role: AnyObject?
+                    AXUIElementCopyAttributeValue(groupChild, kAXRoleAttribute as CFString, &role)
+                    print("角色: \(role)")
+                    
+                    // 获取标题
+                    var title: AnyObject?
+                    AXUIElementCopyAttributeValue(groupChild, kAXTitleAttribute as CFString, &title)
+                    print("标题: \(title)")
+                    
+                    // 获取值
+                    var value: AnyObject?
+                    AXUIElementCopyAttributeValue(groupChild, kAXValueAttribute as CFString, &value)
+                    print("值: \(value)")
+                    
+                    // 获取所有属性名称
+                    var attributeNames: CFArray?
+                    AXUIElementCopyAttributeNames(groupChild, &attributeNames)
+                    print("所有属性: \(attributeNames ?? [] as CFArray)")
+                }
+            } else {
+                print("AXGroup 没有子元素")
+            }
+            }
+
+        } else {
+            print("获取聚焦元素失败")
+        }
     }
 }
 
