@@ -201,7 +201,12 @@ struct ContentView: View {
                     // 获取描述
                     var description: AnyObject?
                     AXUIElementCopyAttributeValue(child, kAXDescriptionAttribute as CFString, &description)
-                    print("描述: \(description)")
+                    // 使用可选绑定来安全地解包
+                    if let descriptionString = description as? String {
+                        print("描述: \(descriptionString)")
+                    } else {
+                        print("描述: 无")
+                    }
                     
                     // 获取值
                     var value: AnyObject?
@@ -230,6 +235,11 @@ struct ContentView: View {
                     var role: AnyObject?
                     AXUIElementCopyAttributeValue(groupChild, kAXRoleAttribute as CFString, &role)
                     print("角色: \(role)")
+
+                    // 获取 label 
+                    var label: AnyObject?
+                    AXUIElementCopyAttributeValue(groupChild, kAXLabelValueAttribute as CFString, &label)
+                    print("label值: \(label)")
                     
                     // 获取标题
                     var title: AnyObject?
@@ -245,6 +255,20 @@ struct ContentView: View {
                     var attributeNames: CFArray?
                     AXUIElementCopyAttributeNames(groupChild, &attributeNames)
                     print("所有属性: \(attributeNames ?? [] as CFArray)")
+
+                    // 获取更多可能的属性
+                    var description: AnyObject?
+                    AXUIElementCopyAttributeValue(groupChild, kAXDescriptionAttribute as CFString, &description)
+                    // 使用可选绑定来安全地解包
+                    if let descriptionString = description as? String {
+                        print("描述: \(descriptionString)")
+                    } else {
+                        print("描述: 无")
+                    }
+                    
+                    var identifier: AnyObject?
+                    AXUIElementCopyAttributeValue(groupChild, kAXIdentifierAttribute as CFString, &identifier)
+                    print("标识符: \(identifier)")
                 }
             } else {
                 print("AXGroup 没有子元素")
