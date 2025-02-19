@@ -162,121 +162,78 @@ struct ContentView: View {
         var focusedElement: AnyObject?
         let result = AXUIElementCopyAttributeValue(systemWideElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
         if result == .success {
-            // // 获取焦点元素的标题
-            // var title: AnyObject?
-            // AXUIElementCopyAttributeNames(
-            //     focusedElement as! AXUIElement,
-            //     kAXTitleAttribute as CFString,
-            //     &title
-            // )
-            
-            // 获取所有可用的属性名称
-            var attributeNames: CFArray?
-            AXUIElementCopyAttributeNames(focusedElement as! AXUIElement, &attributeNames)
-
-            for attributeName in attributeNames as? [CFString] ?? [] {
-                var value: AnyObject?
-                let result = AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, attributeName, &value)
-                if result == .success {
-                    print("属性名称: \(attributeName), 值: \(value)")
-                }
-            }
-
             var children: AnyObject?
             AXUIElementCopyAttributeValue(focusedElement as! AXUIElement, kAXChildrenAttribute as CFString, &children)
-            if let childrenArray = children as? [AXUIElement] {
-                for (index, child) in childrenArray.enumerated() {
-                    print("\n--- 子元素 #\(index + 1) ---")
-                    
-                    // 获取角色
-                    var role: AnyObject?
-                    AXUIElementCopyAttributeValue(child, kAXRoleAttribute as CFString, &role)
-                    print("角色: \(role)")
-                    
-                    // 获取标题
-                    var title: AnyObject?
-                    AXUIElementCopyAttributeValue(child, kAXTitleAttribute as CFString, &title)
-                    print("标题: \(title)")
-                    
-                    // 获取描述
-                    var description: AnyObject?
-                    AXUIElementCopyAttributeValue(child, kAXDescriptionAttribute as CFString, &description)
-                    // 使用可选绑定来安全地解包
-                    if let descriptionString = description as? String {
-                        print("描述: \(descriptionString)")
-                    } else {
-                        print("描述: 无")
-                    }
-                    
-                    // 获取值
-                    var value: AnyObject?
-                    AXUIElementCopyAttributeValue(child, kAXValueAttribute as CFString, &value)
-                    print("值: \(value)")
-                    
-                    // 获取所有属性名称
-                    var attributeNames: CFArray?
-                    AXUIElementCopyAttributeNames(child, &attributeNames)
-                    print("所有属性: \(attributeNames ?? [] as CFArray)")
-                }
-
-             // 获取第一个 AXGroup 元素
-            let firstGroup = childrenArray[0]
+            let childrenArray = children as? [AXUIElement]
+            if childrenArray!.count <= 0 {
+                print("获取聚焦元素的子元素失败")
+                return
+            }
+            // 获取第一个 children
+            let firstGroup = childrenArray![0]
             
             // 获取 AXGroup 的子元素
             var groupChildren: AnyObject?
             AXUIElementCopyAttributeValue(firstGroup, kAXChildrenAttribute as CFString, &groupChildren)
             
             if let groupChildrenArray = groupChildren as? [AXUIElement] {
-                print("\n=== AXGroup 的子元素 ===")
+                var infoText = "\n=== AXGroup 的子元素 ===\n"
+                
                 for (index, groupChild) in groupChildrenArray.enumerated() {
-                    print("\n--- 子元素 #\(index + 1) ---")
+                    infoText += "\n--- 子元素 #\(index + 1) ---\n"
                     
                     // 获取角色
                     var role: AnyObject?
                     AXUIElementCopyAttributeValue(groupChild, kAXRoleAttribute as CFString, &role)
-                    print("角色: \(role)")
+                    infoText += "角色: \(role)\n"
 
                     // 获取 label 
                     var label: AnyObject?
                     AXUIElementCopyAttributeValue(groupChild, kAXLabelValueAttribute as CFString, &label)
-                    print("label值: \(label)")
+                    infoText += "label值: \(label)\n"
                     
                     // 获取标题
                     var title: AnyObject?
                     AXUIElementCopyAttributeValue(groupChild, kAXTitleAttribute as CFString, &title)
-                    print("标题: \(title)")
+                    infoText += "标题: \(title)\n"
                     
                     // 获取值
                     var value: AnyObject?
                     AXUIElementCopyAttributeValue(groupChild, kAXValueAttribute as CFString, &value)
-                    print("值: \(value)")
+                    infoText += "值: \(value)\n"
                     
-                    // 获取所有属性名称
-                    var attributeNames: CFArray?
-                    AXUIElementCopyAttributeNames(groupChild, &attributeNames)
-                    print("所有属性: \(attributeNames ?? [] as CFArray)")
-
                     // 获取更多可能的属性
                     var description: AnyObject?
                     AXUIElementCopyAttributeValue(groupChild, kAXDescriptionAttribute as CFString, &description)
-                    // 使用可选绑定来安全地解包
                     if let descriptionString = description as? String {
-                        print("描述: \(descriptionString)")
+                        infoText += "描述: \(descriptionString)\n"
                     } else {
-                        print("描述: 无")
+                        infoText += "描述: 无\n"
                     }
                     
                     var identifier: AnyObject?
                     AXUIElementCopyAttributeValue(groupChild, kAXIdentifierAttribute as CFString, &identifier)
-                    print("标识符: \(identifier)")
+                    infoText += "标识符: \(identifier)\n"
+
+                    // 获取所有属性名称
+                    var attributeNames: CFArray?
+                    AXUIElementCopyAttributeNames(groupChild, &attributeNames)
+                    infoText += "所有属性: \(attributeNames ?? [] as CFArray)\n"
+                }
+                
+                // 更新 UI 需要在主线程进行
+                DispatchQueue.main.async {
+                    self.accessibilityInfo = infoText
                 }
             } else {
-                print("AXGroup 没有子元素")
+                DispatchQueue.main.async {
+                    self.accessibilityInfo = "AXGroup 没有子元素"
+                }
             }
-            }
-
         } else {
-            print("获取聚焦元素失败")
+            DispatchQueue.main.async {
+                self.accessibilityInfo = "获取聚焦元素失败"
+            }
         }
     }
 }
