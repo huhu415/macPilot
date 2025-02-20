@@ -32,6 +32,9 @@ struct ContentView: View {
     @State private var isServerHealthy: Bool = false
     @State private var showServerAlert: Bool = false
     @State private var accessibilityInfo: String = "" // 新增状态变量
+    @State private var focusedWindowPID: pid_t = 0
+    @State private var focusedAppName: String = "未知"  // 新增状态变量
+    @State private var inputPID: String = ""  // 新增状态变量用于存储输入的PID
 
     var body: some View {
         VStack(spacing: 20) {
@@ -71,13 +74,46 @@ struct ContentView: View {
                 getCurrentWindowInfo()
             }
 
+            HStack {
+                TextField("输入进程 PID", text: $inputPID)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .frame(width: 120)
+                
+                Button("根据PID获取窗口信息") {
+                    if let pid = pid_t(inputPID) {
+                        getWindowInfoByPID(pid)
+                    }
+                }
+            }
+
+            Text("当前窗口PID: \(focusedWindowPID)")
+                .padding()
+            Text("当前应用名称: \(focusedAppName)")
+                .padding()
+
             // 显示 Accessibility 信息
-            ScrollView {
-                Text(accessibilityInfo)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding()
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(8)
+            VStack {
+                HStack {
+                    Text("Accessibility 信息")
+                    Spacer()
+                    Button(action: {
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.clearContents()
+                        pasteboard.setString(accessibilityInfo, forType: .string)
+                    }) {
+                        Image(systemName: "doc.on.doc")
+                        Text("复制")
+                    }
+                }
+                .padding(.horizontal)
+                
+                ScrollView {
+                    Text(accessibilityInfo)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background(Color.gray.opacity(0.1))
+                        .cornerRadius(8)
+                }
             }
             .frame(height: 200)
 
@@ -106,8 +142,10 @@ struct ContentView: View {
                 print("❌ 服务器启动失败: \(error.localizedDescription)")
             }
 
+            // 添加定时器获取焦点窗口信息
             Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
                 mousePosition = InputControl.getCurrentMousePosition()
+                updateFocusedWindowInfo()
             }
         }
     }
@@ -171,6 +209,8 @@ struct ContentView: View {
             }
             // 获取第一个 children
             let firstGroup = childrenArray![0]
+
+            exportAccessibilityTreeToJSON(element: firstGroup)
             
             // 获取 AXGroup 的子元素
             var groupChildren: AnyObject?
@@ -233,6 +273,116 @@ struct ContentView: View {
         } else {
             DispatchQueue.main.async {
                 self.accessibilityInfo = "获取聚焦元素失败"
+            }
+        }
+    }
+
+    private func dfs(element: AXUIElement) -> [String: Any] {
+        var result: [String: Any] = [:]
+        
+        // 获取当前元素的基本属性
+        var role: AnyObject?
+        var title: AnyObject?
+        var value: AnyObject?
+        var description: AnyObject?
+        
+        AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &role)
+        AXUIElementCopyAttributeValue(element, kAXTitleAttribute as CFString, &title)
+        AXUIElementCopyAttributeValue(element, kAXValueAttribute as CFString, &value)
+        AXUIElementCopyAttributeValue(element, kAXDescriptionAttribute as CFString, &description)
+        
+        // 添加属性到结果字典
+        result["role"] = (role as? String) ?? "unknown"
+        result["title"] = (title as? String) ?? ""
+        result["value"] = (value as? String) ?? ""
+        result["description"] = (description as? String) ?? ""
+        
+        // 处理子元素
+        var children: AnyObject?
+        AXUIElementCopyAttributeValue(element, kAXChildrenAttribute as CFString, &children)
+        if let childrenArray = children as? [AXUIElement], !childrenArray.isEmpty {
+            result["children"] = childrenArray.map { dfs(element: $0) }
+        }
+        
+        return result
+    }
+    
+    // 新增用于导出 JSON 的辅助方法
+    private func exportAccessibilityTreeToJSON(element: AXUIElement) {
+        let tree = dfs(element: element)
+        
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: tree, options: .prettyPrinted)
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                // 可以选择将 JSON 保存到文件或显示在界面上
+                print(jsonString)
+                DispatchQueue.main.async {
+                    self.accessibilityInfo = jsonString
+                }
+            }
+        } catch {
+            print("JSON 序列化错误: \(error.localizedDescription)")
+        }
+    }
+
+    // 新增获取当前焦点窗口PID的方法
+    private func getFocusedWindowPID() {
+        let systemWideElement = AXUIElementCreateSystemWide()
+        var focusedElement: AnyObject?
+        let result = AXUIElementCopyAttributeValue(systemWideElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
+        
+        if result == .success {
+            let focusedUIElement = focusedElement as! AXUIElement
+            var pid: pid_t = 0
+            AXUIElementGetPid(focusedUIElement, &pid)
+            
+            DispatchQueue.main.async {
+                self.focusedWindowPID = pid
+                print("获取到焦点窗口PID: \(pid)")
+            }
+        } else {
+            print("获取焦点窗口失败")
+            DispatchQueue.main.async {
+                self.focusedWindowPID = 0
+            }
+        }
+    }
+
+    // 新增更新焦点窗口信息的方法
+    private func updateFocusedWindowInfo() {
+        let systemWideElement = AXUIElementCreateSystemWide()
+        var focusedElement: AnyObject?
+        let result = AXUIElementCopyAttributeValue(systemWideElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
+        
+        if result == .success {
+            let focusedUIElement = focusedElement as! AXUIElement
+            var pid: pid_t = 0
+            AXUIElementGetPid(focusedUIElement, &pid)
+            
+            // 使用 pid 获取应用名称
+            if let app = NSRunningApplication(processIdentifier: pid) {
+                DispatchQueue.main.async {
+                    self.focusedWindowPID = pid
+                    self.focusedAppName = app.localizedName ?? "未知"
+                }
+            }
+        }
+    }
+
+    // 新增根据PID获取窗口信息的方法
+    private func getWindowInfoByPID(_ pid: pid_t) {
+        let appElement = AXUIElementCreateApplication(pid)
+        var windowList: CFTypeRef?
+        let result = AXUIElementCopyAttributeValue(appElement, kAXWindowsAttribute as CFString, &windowList)
+        
+        if result == .success, let windows = windowList as? [AXUIElement] {
+            for window in windows {
+                exportAccessibilityTreeToJSON(element: window)
+                return  // 只处理第一个窗口
+            }
+        } else {
+            DispatchQueue.main.async {
+                self.accessibilityInfo = "无法获取PID \(pid) 的窗口信息"
             }
         }
     }
