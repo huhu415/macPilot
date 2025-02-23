@@ -68,18 +68,24 @@ struct ContentView: View {
             Button("截取屏幕") {
                 takeScreenshot()
             }
-            
-            Button("获取窗口信息") {
-                let windowList: CFArray? = CGWindowListCopyWindowInfo(
-                    [.optionAll],
-                    kCGNullWindowID)
 
-                for entry in windowList! as Array {
-                    let ownerName: String = entry.object(forKey: kCGWindowOwnerName) as? String ?? "N/A"
-                    let ownerPID: Int = entry.object(forKey: kCGWindowOwnerPID) as? Int ?? 0
-                    if ownerName != "" && ownerPID > 1500 {
-                        print("ownerName: \(ownerName), ownerPID:\(ownerPID)")
-                    }
+            Button("获取窗口信息") {
+                let options = CGWindowListOption(
+                    arrayLiteral: .optionOnScreenOnly, .excludeDesktopElements)
+                let windowList =
+                    CGWindowListCopyWindowInfo(options, kCGNullWindowID) as! [[String: Any]]
+
+                for window in windowList {
+                    let windowNumber = window[kCGWindowNumber as String] as! Int
+                    let windowOwnerName = window[kCGWindowOwnerName as String] as? String
+                    let windowOwnerPID = window[kCGWindowOwnerPID as String] as! Int
+                    let windowName = window[kCGWindowName as String] as? String ?? "未知窗口"
+
+                    print("窗口名称: \(windowName)")
+                    print("Window Number: \(windowNumber)")
+                    print("进程 PID: \(windowOwnerPID)")
+                    print("进程名称: \(windowOwnerName ?? "未知")")
+                    print("-------------------")
                 }
             }
 
@@ -97,7 +103,7 @@ struct ContentView: View {
 
             VStack {
                 Text("当前应用: \(accessibilityManager.focusedAppName)")
-                Text("PID: \(accessibilityManager.focusedWindowPID)")
+                Text("PID: \(accessibilityManager.focusedWindowID)")
                 Text(accessibilityManager.accessibilityInfo)
 
                 Button("获取窗口信息") {
@@ -159,7 +165,7 @@ struct ContentView: View {
             }
 
             // 添加定时器获取焦点窗口信息
-            Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { _ in
+            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
                 mousePosition = InputControl.getCurrentMousePosition()
                 accessibilityManager.getFocusedWindowInfo()
             }
