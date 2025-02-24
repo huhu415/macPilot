@@ -103,12 +103,9 @@ struct ContentView: View {
 
             VStack {
                 Text("当前应用: \(accessibilityManager.focusedAppName)")
-                Text("PID: \(accessibilityManager.focusedWindowID)")
+                Text("PID: \(accessibilityManager.focusedWindowPID)")
+                Text("Window ID: \(accessibilityManager.focusedWindowID)")
                 Text(accessibilityManager.accessibilityInfo)
-
-                Button("获取窗口信息") {
-                    accessibilityManager.getCurrentWindowInfo()
-                }
             }
             .padding()
 
@@ -165,7 +162,7 @@ struct ContentView: View {
             }
 
             // 添加定时器获取焦点窗口信息
-            Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                 mousePosition = InputControl.getCurrentMousePosition()
                 accessibilityManager.getFocusedWindowInfo()
             }

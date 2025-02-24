@@ -8,13 +8,16 @@ private let AXValueType_CFRange = 4
 
 // 声明私有 API
 @_silgen_name("_AXUIElementGetWindow")
-func _AXUIElementGetWindow(_ axElement: AXUIElement, _ windowId: UnsafeMutablePointer<CGWindowID>)
+func _AXUIElementGetWindow(
+    _ axElement: AXUIElement, _ windowId: UnsafeMutablePointer<CGWindowID>
+)
     -> AXError
 
 class AccessibilityManager: ObservableObject {
     // 发布属性用于 SwiftUI 绑定
     @Published var accessibilityInfo: String = ""
     @Published var focusedWindowID: UInt32 = 0
+    @Published var focusedWindowPID: pid_t = 0
     @Published var focusedAppName: String = ""
 
     init() {
@@ -198,61 +201,85 @@ class AccessibilityManager: ObservableObject {
         // 获取聚焦元素
         var focusedElement: AnyObject?
         let result = AXUIElementCopyAttributeValue(
-            systemWideElement, kAXFocusedUIElementAttribute as CFString, &focusedElement)
-        if result != .success {
+            systemWideElement, kAXFocusedUIElementAttribute as CFString,
+            &focusedElement)
+
+        guard result == .success,
+            let focusedUIElement = focusedElement
+        else {
             print("获取焦点窗口失败 - 错误代码: \(result.rawValue)")
             DispatchQueue.main.async {
-                self.focusedWindowID = 0
                 self.focusedAppName = "未知"
+                self.focusedWindowID = 0
+                self.focusedWindowPID = 0
             }
             return
         }
 
-        // 通过聚焦元素获取PID, PID获取应用名称
+        // 通过聚焦元素获取PID
         var pid: pid_t = 0
-        let pidResult = AXUIElementGetPid(focusedElement as! AXUIElement, &pid)
-        if pidResult == .success {
-            // 通过PID获取应用名称
-            let appElement = AXUIElementCreateApplication(pid)
-            var appName: AnyObject?
-            let appNameResult = AXUIElementCopyAttributeValue(
-                appElement, kAXTitleAttribute as CFString, &appName)
+        let pidResult = AXUIElementGetPid(
+            focusedUIElement as! AXUIElement, &pid)
 
-            // 如果获取不到 title，尝试通过 NSRunningApplication 获取应用名称
-            if appNameResult == .success, let appNameString = appName as? String {
-                DispatchQueue.main.async {
-                    self.focusedAppName = appNameString
-                }
+        if pidResult != .success {
+            print("获取PID失败 - 错误代码: \(pidResult.rawValue)")
+            DispatchQueue.main.async {
+                self.focusedAppName = "未知"
+                self.focusedWindowID = 0
+                self.focusedWindowPID = 0
             }
+            return
         }
 
-        // 通过聚焦元素获取窗口
-        let focusedUIElement = focusedElement as! AXUIElement
+        let appElement = AXUIElementCreateApplication(pid)
+
+        // 获取应用名称
+        var appName: AnyObject?
+        let appNameResult = AXUIElementCopyAttributeValue(
+            appElement, kAXTitleAttribute as CFString, &appName)
+
+        // 获取窗口信息
+        var windowList: CFTypeRef?
+        let windowListResult = AXUIElementCopyAttributeValue(
+            appElement, kAXWindowsAttribute as CFString, &windowList)
+
+        // 获取窗口
         var window: AnyObject?
         let windowResult = AXUIElementCopyAttributeValue(
-            focusedUIElement, kAXWindowAttribute as CFString, &window)
-        if windowResult != .success {
-            print("获取窗口失败 - 错误代码: \(windowResult.rawValue)")
-            DispatchQueue.main.async {
-                self.focusedWindowID = 0
-            }
-            return
-        }
-
-        // 通过窗口获取窗口 ID
-        let windowUIElement = window as! AXUIElement
-        var windowRef: CGWindowID = 0
-        let windowsNum = _AXUIElementGetWindow(windowUIElement, &windowRef)
-        if windowsNum != .success {
-            print("获取窗口ID失败 - 错误代码: \(windowsNum.rawValue)")
-            DispatchQueue.main.async {
-                self.focusedWindowID = 0
-            }
-            return
-        }
+            focusedUIElement as! AXUIElement,
+            kAXWindowAttribute as CFString, &window)
 
         DispatchQueue.main.async {
-            self.focusedWindowID = windowRef
+            self.focusedWindowPID = pid
+            self.focusedAppName = "未知"
+            self.focusedWindowID = 0
+
+            // 更新应用名称
+            if appNameResult == .success {
+                self.focusedAppName = appName as! String
+            }
+
+            // 更新窗口ID
+            if windowResult == .success {
+                let windowUIElement = window as! AXUIElement
+                var windowRef: CGWindowID = 0
+                let windowsNum = _AXUIElementGetWindow(
+                    windowUIElement, &windowRef)
+
+                if windowsNum == .success {
+                    self.focusedWindowID = windowRef
+                } else {
+                    print("获取窗口ID失败 - 错误代码: \(windowsNum.rawValue)")
+                    self.focusedWindowID = 0
+                }
+            }
+
+            // 获取窗口列表
+            if windowListResult == .success,
+                let windows = windowList as? [AXUIElement]
+            {
+                print("窗口列表: \(windows)")
+            }
         }
     }
 
@@ -272,12 +299,6 @@ class AccessibilityManager: ObservableObject {
             DispatchQueue.main.async {
                 self.accessibilityInfo = "无法获取PID \(pid) 的窗口信息"
             }
-        }
-    }
-
-    private func setFocusedWindowID(_ id: UInt32) {
-        DispatchQueue.main.async {
-            self.focusedWindowID = id
         }
     }
 }
