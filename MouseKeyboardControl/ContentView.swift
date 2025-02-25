@@ -31,7 +31,6 @@ struct ContentView: View {
     @State private var errorMessage: String = ""  // 新增状态用于错误信息
     @State private var isServerHealthy: Bool = false
     @State private var showServerAlert: Bool = false
-    @State private var accessibilityInfo: String = ""  // 新增状态变量
     @State private var inputPID: String = ""  // 新增状态变量用于存储输入的PID
     @StateObject private var accessibilityManager = AccessibilityManager()
 
@@ -118,7 +117,7 @@ struct ContentView: View {
                         let pasteboard = NSPasteboard.general
                         pasteboard.clearContents()
                         pasteboard.setString(
-                            accessibilityInfo, forType: .string)
+                            accessibilityManager.accessibilityInfo, forType: .string)
                     }) {
                         Image(systemName: "doc.on.doc")
                         Text("复制")
@@ -127,7 +126,7 @@ struct ContentView: View {
                 .padding(.horizontal)
 
                 ScrollView {
-                    Text(accessibilityInfo)
+                    Text(accessibilityManager.accessibilityInfo)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding()
                         .background(Color.gray.opacity(0.1))

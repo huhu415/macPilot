@@ -60,7 +60,13 @@ class AccessibilityManager: ObservableObject {
             // 获取第一个 children
             let firstGroup = childrenArray![0]
 
-            exportAccessibilityTreeToJSON(element: firstGroup)
+            // 接收返回的 JSON 字符串
+            let jsonString = exportAccessibilityTreeToJSON(element: firstGroup)
+            
+            // 更新 UI
+            DispatchQueue.main.async {
+                self.accessibilityInfo = jsonString
+            }
 
             // 获取 AXGroup 的子元素
             var groupChildren: AnyObject?
@@ -176,22 +182,23 @@ class AccessibilityManager: ObservableObject {
         return result
     }
 
-    // 新增用于导出 JSON 的辅助方法
-    public func exportAccessibilityTreeToJSON(element: AXUIElement) {
+    // 修改用于导出 JSON 的辅助方法，返回 JSON 字符串
+    private func exportAccessibilityTreeToJSON(element: AXUIElement) -> String {
         let tree = dfs(element: element)
+        var jsonString = ""
 
         do {
             let jsonData = try JSONSerialization.data(
                 withJSONObject: tree, options: .prettyPrinted)
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                // 显示在界面上
-                DispatchQueue.main.async {
-                    self.accessibilityInfo = jsonString
-                }
+            if let jsonStr = String(data: jsonData, encoding: .utf8) {
+                jsonString = jsonStr
             }
         } catch {
             print("JSON 序列化错误: \(error.localizedDescription)")
+            jsonString = "{\"error\": \"JSON 序列化失败\"}"
         }
+        
+        return jsonString
     }
 
     // 获取焦点窗口信息的方法
@@ -259,6 +266,13 @@ class AccessibilityManager: ObservableObject {
                 self.focusedAppName = appName as! String
             }
 
+            // 获取窗口列表
+            if windowListResult == .success,
+                let windows = windowList as? [AXUIElement]
+            {
+                print("窗口列表: \(windows)")
+            }
+
             // 更新窗口ID
             if windowResult == .success {
                 let windowUIElement = window as! AXUIElement
@@ -273,14 +287,42 @@ class AccessibilityManager: ObservableObject {
                     self.focusedWindowID = 0
                 }
             }
-
-            // 获取窗口列表
-            if windowListResult == .success,
-                let windows = windowList as? [AXUIElement]
-            {
-                print("窗口列表: \(windows)")
-            }
         }
+    }
+
+    // 根据聚焦窗口获取窗口结构
+    public func getWindowStructure() -> String {
+        let systemWideElement = AXUIElementCreateSystemWide()
+
+        // 获取聚焦元素
+        var focusedElement: AnyObject?
+        let result = AXUIElementCopyAttributeValue(
+            systemWideElement, kAXFocusedUIElementAttribute as CFString,
+            &focusedElement)
+
+        guard result == .success, let focusedUIElement = focusedElement else {
+            print("获取焦点窗口失败 - 错误代码: \(result.rawValue)")
+            DispatchQueue.main.async {
+                self.accessibilityInfo = "无法获取焦点窗口"
+            }
+            return "获取焦点窗口失败"
+        }
+        
+        // 获取窗口
+        var window: AnyObject?
+        let windowResult = AXUIElementCopyAttributeValue(
+            focusedUIElement as! AXUIElement, kAXWindowAttribute as CFString, &window)
+        
+        guard windowResult == .success, let windowUIElement = window else {
+            print("获取窗口失败 - 错误代码: \(windowResult.rawValue)")
+            DispatchQueue.main.async {
+                self.accessibilityInfo = "无法获取当前焦点元素的窗口"
+            }
+            return "获取窗口失败"
+        }
+        
+        // 导出窗口的辅助功能树结构为JSON
+        return exportAccessibilityTreeToJSON(element: windowUIElement as! AXUIElement)
     }
 
     // 新增根据PID获取窗口信息的方法
@@ -292,7 +334,13 @@ class AccessibilityManager: ObservableObject {
 
         if result == .success, let windows = windowList as? [AXUIElement] {
             for window in windows {
-                exportAccessibilityTreeToJSON(element: window)
+                let jsonString = exportAccessibilityTreeToJSON(element: window)
+            
+                // 更新 UI
+                DispatchQueue.main.async {
+                    self.accessibilityInfo = jsonString
+                }
+                
                 return  // 只处理第一个窗口
             }
         } else {

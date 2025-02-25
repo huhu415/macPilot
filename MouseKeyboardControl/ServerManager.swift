@@ -255,6 +255,13 @@ class ServerManager {
             return .ok(.data(jsonData, contentType: "application/json"))
         }
 
+        // GET 获取当前聚焦窗口信息
+        server?["/focused_window_info"] = { request in
+            let accessibilityManager = AccessibilityManager()
+            let jsonString = accessibilityManager.getWindowStructure()
+            return .ok(.data(jsonString.data(using: .utf8)!, contentType: "application/json"))
+        }
+
         return server
     }
 }
