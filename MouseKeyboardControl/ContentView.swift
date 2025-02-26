@@ -36,24 +36,6 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("当前鼠标位置: \(Int(mousePosition.x)), \(Int(mousePosition.y))")
-
-            Button("移动鼠标到屏幕中心") {
-                let screenFrame = NSScreen.main?.frame ?? .zero
-                let centerPoint = CGPoint(
-                    x: screenFrame.width / 2, y: screenFrame.height / 2)
-                print("移动鼠标到屏幕中心: \(centerPoint)")
-                InputControl.moveMouse(to: centerPoint)
-            }
-
-            Button("鼠标点击屏幕中心(延迟1s)") {
-                sleep(1)
-                let screenFrame = NSScreen.main?.frame ?? .zero
-                let centerPoint = CGPoint(
-                    x: screenFrame.width / 2, y: screenFrame.height / 2)
-                InputControl.mouseClick(at: centerPoint)
-            }
-
             Button("检查服务器状态") {
                 checkServerStatus()
             }.alert(isPresented: $showServerAlert) {
@@ -64,21 +46,59 @@ struct ContentView: View {
                 )
             }
 
-            Button("截取屏幕") {
-                takeScreenshot()
+            Text("当前鼠标位置: \(Int(mousePosition.x)), \(Int(mousePosition.y))")
+
+            HStack {
+                Button("移动鼠标到屏幕中心") {
+                    let screenFrame = NSScreen.main?.frame ?? .zero
+                    let centerPoint = CGPoint(
+                        x: screenFrame.width / 2, y: screenFrame.height / 2)
+                    print("移动鼠标到屏幕中心: \(centerPoint)")
+                    InputControl.moveMouse(to: centerPoint)
+                }
+
+                Button("鼠标点击屏幕中心(延迟1s)") {
+                    sleep(1)
+                    let screenFrame = NSScreen.main?.frame ?? .zero
+                    let centerPoint = CGPoint(
+                        x: screenFrame.width / 2, y: screenFrame.height / 2)
+                    InputControl.mouseClick(at: centerPoint)
+                }
+
+                Button("截取屏幕") {
+                    takeScreenshot()
+                }
             }
 
-            Button("获取窗口信息") {
+            // 分割线
+            Divider()
+
+            Button("获取当前系统所有窗口信息") {
                 let options = CGWindowListOption(
                     arrayLiteral: .optionOnScreenOnly, .excludeDesktopElements)
                 let windowList =
-                    CGWindowListCopyWindowInfo(options, kCGNullWindowID) as! [[String: Any]]
+                    CGWindowListCopyWindowInfo(options, kCGNullWindowID)
+                    as! [[String: Any]]
 
                 for window in windowList {
                     let windowNumber = window[kCGWindowNumber as String] as! Int
-                    let windowOwnerName = window[kCGWindowOwnerName as String] as? String
-                    let windowOwnerPID = window[kCGWindowOwnerPID as String] as! Int
-                    let windowName = window[kCGWindowName as String] as? String ?? "未知窗口"
+                    let windowOwnerName =
+                        window[kCGWindowOwnerName as String] as? String
+                    let windowOwnerPID =
+                        window[kCGWindowOwnerPID as String] as! Int
+                    let windowName =
+                        window[kCGWindowName as String] as? String ?? "未知窗口"
+
+                    if windowOwnerPID < 1500 {
+                        continue
+                    }
+
+                    if let frontmostApp = NSWorkspace.shared
+                        .frontmostApplication
+                    {
+                        print(frontmostApp)
+                        print("Active app: \(frontmostApp.localizedName ?? "")")
+                    }
 
                     print("窗口名称: \(windowName)")
                     print("Window Number: \(windowNumber)")
@@ -87,6 +107,13 @@ struct ContentView: View {
                     print("-------------------")
                 }
             }
+
+            VStack {
+                Text("当前应用: \(accessibilityManager.focusedAppName)")
+                Text("PID: \(accessibilityManager.focusedWindowPID)")
+                Text("Window ID: \(accessibilityManager.focusedWindowID)")
+            }
+            .padding()
 
             HStack {
                 TextField("输入进程 PID", text: $inputPID)
@@ -100,14 +127,6 @@ struct ContentView: View {
                 }
             }
 
-            VStack {
-                Text("当前应用: \(accessibilityManager.focusedAppName)")
-                Text("PID: \(accessibilityManager.focusedWindowPID)")
-                Text("Window ID: \(accessibilityManager.focusedWindowID)")
-                Text(accessibilityManager.accessibilityInfo)
-            }
-            .padding()
-
             // 显示 Accessibility 信息
             VStack {
                 HStack {
@@ -117,7 +136,8 @@ struct ContentView: View {
                         let pasteboard = NSPasteboard.general
                         pasteboard.clearContents()
                         pasteboard.setString(
-                            accessibilityManager.accessibilityInfo, forType: .string)
+                            accessibilityManager.accessibilityInfo,
+                            forType: .string)
                     }) {
                         Image(systemName: "doc.on.doc")
                         Text("复制")

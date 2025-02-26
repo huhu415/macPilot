@@ -62,7 +62,7 @@ class AccessibilityManager: ObservableObject {
 
             // 接收返回的 JSON 字符串
             let jsonString = exportAccessibilityTreeToJSON(element: firstGroup)
-            
+
             // 更新 UI
             DispatchQueue.main.async {
                 self.accessibilityInfo = jsonString
@@ -145,36 +145,87 @@ class AccessibilityManager: ObservableObject {
     private func dfs(element: AXUIElement) -> [String: Any] {
         var result: [String: Any] = [:]
 
-        // 获取当前元素的基本属性
-        var role: AnyObject?
-        var title: AnyObject?
-        var value: AnyObject?
-        var description: AnyObject?
-        AXUIElementCopyAttributeValue(
-            element, kAXRoleAttribute as CFString, &role)
-        AXUIElementCopyAttributeValue(
-            element, kAXTitleAttribute as CFString, &title)
-        AXUIElementCopyAttributeValue(
-            element, kAXValueAttribute as CFString, &value)
-        AXUIElementCopyAttributeValue(
-            element, kAXDescriptionAttribute as CFString, &description)
+        // 定义要获取的属性列表
+        let attributes: [(String, String)] = [
+            (kAXRoleAttribute, "role"),
+            (kAXSubroleAttribute, "subrole"),
+            (kAXRoleDescriptionAttribute, "roleDescription"),
+            (kAXTitleAttribute, "title"),
+            (kAXValueAttribute, "value"),
+            (kAXDescriptionAttribute, "description"),
+            (kAXHelpAttribute, "help"),
+            (kAXEnabledAttribute, "enabled"),
+            (kAXFocusedAttribute, "focused"),
+            (kAXPositionAttribute, "position"),
+            (kAXSizeAttribute, "size"),
+            (kAXWindowAttribute, "window"),
+            (kAXSelectedAttribute, "selected"),
+            (kAXExpandedAttribute, "expanded"),
+            (kAXIdentifierAttribute, "identifier"),
+            (kAXURLAttribute, "url"),
+            (kAXIndexAttribute, "index"),
+            (kAXTextAttribute, "text"),
+            (kAXPlaceholderValueAttribute, "placeholder"),
+            (kAXIsEditableAttribute, "isEditable"),
+            (kAXMainAttribute, "isMain"),
+            (kAXMinimizedAttribute, "isMinimized"),
+            (kAXModalAttribute, "isModal"),
+        ]
 
-        // 添加属性到结果字典
-        result["role"] = (role as? String) ?? "unknown"
-        result["title"] = (title as? String) ?? ""
-        result["value"] = (value as? String) ?? ""
-        result["description"] = (description as? String) ?? ""
+        // 获取每个属性的值
+        for (attributeName, resultKey) in attributes {
+            var attributeValue: AnyObject?
+            let status = AXUIElementCopyAttributeValue(
+                element,
+                attributeName as CFString,
+                &attributeValue
+            )
+
+            if status == .success {
+                switch attributeValue {
+                case let value as String:
+                    result[resultKey] = value
+                case let value as Bool:
+                    result[resultKey] = value
+                case let value as Int:
+                    result[resultKey] = value
+                case let value as CGPoint:
+                    result[resultKey] = ["x": value.x, "y": value.y]
+                case let value as CGSize:
+                    result[resultKey] = [
+                        "width": value.width, "height": value.height,
+                    ]
+                case let value as NSValue:
+                    if String(describing: value).contains("NSPoint") {
+                        let point = value.pointValue
+                        result[resultKey] = ["x": point.x, "y": point.y]
+                    } else if String(describing: value).contains("NSSize") {
+                        let size = value.sizeValue
+                        result[resultKey] = [
+                            "width": size.width, "height": size.height,
+                        ]
+                    }
+                default:
+                    if let stringValue = attributeValue as? String {
+                        result[resultKey] = stringValue
+                    }
+                }
+            }
+        }
 
         // 处理子元素
         var children: AnyObject?
         AXUIElementCopyAttributeValue(
-            element, kAXChildrenAttribute as CFString, &children)
+            element,
+            kAXChildrenAttribute as CFString,
+            &children
+        )
         if let childrenArray = children as? [AXUIElement],
             !childrenArray.isEmpty
         {
             var transformedArray: [[String: Any]] = []
-            for element in childrenArray {
-                transformedArray.append(dfs(element: element))
+            for childElement in childrenArray {
+                transformedArray.append(dfs(element: childElement))
             }
             result["children"] = transformedArray
         }
@@ -197,7 +248,7 @@ class AccessibilityManager: ObservableObject {
             print("JSON 序列化错误: \(error.localizedDescription)")
             jsonString = "{\"error\": \"JSON 序列化失败\"}"
         }
-        
+
         return jsonString
     }
 
@@ -210,6 +261,12 @@ class AccessibilityManager: ObservableObject {
         let result = AXUIElementCopyAttributeValue(
             systemWideElement, kAXFocusedUIElementAttribute as CFString,
             &focusedElement)
+
+        // 添加错误处理
+        if result != .success {
+            print("获取焦点窗口失败: \(result)")
+            return
+        }
 
         guard result == .success,
             let focusedUIElement = focusedElement
@@ -275,6 +332,7 @@ class AccessibilityManager: ObservableObject {
 
             // 更新窗口ID
             if windowResult == .success {
+                print("windowResult success")
                 let windowUIElement = window as! AXUIElement
                 var windowRef: CGWindowID = 0
                 let windowsNum = _AXUIElementGetWindow(
@@ -307,12 +365,13 @@ class AccessibilityManager: ObservableObject {
             }
             return "获取焦点窗口失败"
         }
-        
+
         // 获取窗口
         var window: AnyObject?
         let windowResult = AXUIElementCopyAttributeValue(
-            focusedUIElement as! AXUIElement, kAXWindowAttribute as CFString, &window)
-        
+            focusedUIElement as! AXUIElement, kAXWindowAttribute as CFString,
+            &window)
+
         guard windowResult == .success, let windowUIElement = window else {
             print("获取窗口失败 - 错误代码: \(windowResult.rawValue)")
             DispatchQueue.main.async {
@@ -320,9 +379,10 @@ class AccessibilityManager: ObservableObject {
             }
             return "获取窗口失败"
         }
-        
+
         // 导出窗口的辅助功能树结构为JSON
-        return exportAccessibilityTreeToJSON(element: windowUIElement as! AXUIElement)
+        return exportAccessibilityTreeToJSON(
+            element: windowUIElement as! AXUIElement)
     }
 
     // 新增根据PID获取窗口信息的方法
@@ -335,12 +395,12 @@ class AccessibilityManager: ObservableObject {
         if result == .success, let windows = windowList as? [AXUIElement] {
             for window in windows {
                 let jsonString = exportAccessibilityTreeToJSON(element: window)
-            
+
                 // 更新 UI
                 DispatchQueue.main.async {
                     self.accessibilityInfo = jsonString
                 }
-                
+
                 return  // 只处理第一个窗口
             }
         } else {
