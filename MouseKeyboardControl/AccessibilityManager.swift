@@ -409,4 +409,35 @@ class AccessibilityManager: ObservableObject {
             }
         }
     }
+
+    public func getWindowsListInfo() -> String {
+        var windowsArray: [[String: Any]] = []
+        let options = CGWindowListOption(
+            arrayLiteral: .optionOnScreenOnly, .excludeDesktopElements)
+        let windowList =
+            CGWindowListCopyWindowInfo(options, kCGNullWindowID)
+            as! [[String: Any]]
+
+        for window in windowList {
+            let windowOwnerPID = window[kCGWindowOwnerPID as String] as! Int
+            if windowOwnerPID < 1500 {
+                continue
+            }
+            windowsArray.append(window)
+        }
+
+        do {
+            let jsonData = try JSONSerialization.data(
+                withJSONObject: windowsArray,
+                options: .prettyPrinted
+            )
+            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                return jsonString
+            }
+        } catch {
+            print("JSON 序列化错误: \(error.localizedDescription)")
+        }
+
+        return "{\"error\": \"JSON 序列化失败\"}"
+    }
 }

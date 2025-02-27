@@ -32,7 +32,15 @@ struct ContentView: View {
     @State private var isServerHealthy: Bool = false
     @State private var showServerAlert: Bool = false
     @State private var inputPID: String = ""  // 新增状态变量用于存储输入的PID
+    @State private var windowInfo: String = ""
+    @State private var windowDisplayMode: WindowInfoDisplayMode = .none
     @StateObject private var accessibilityManager = AccessibilityManager()
+
+    enum WindowInfoDisplayMode {
+        case allWindows
+        case pidWindow
+        case none
+    }
 
     var body: some View {
         VStack(spacing: 20) {
@@ -73,39 +81,42 @@ struct ContentView: View {
             // 分割线
             Divider()
 
-            Button("获取当前系统所有窗口信息") {
-                let options = CGWindowListOption(
-                    arrayLiteral: .optionOnScreenOnly, .excludeDesktopElements)
-                let windowList =
-                    CGWindowListCopyWindowInfo(options, kCGNullWindowID)
-                    as! [[String: Any]]
-
-                for window in windowList {
-                    let windowNumber = window[kCGWindowNumber as String] as! Int
-                    let windowOwnerName =
-                        window[kCGWindowOwnerName as String] as? String
-                    let windowOwnerPID =
-                        window[kCGWindowOwnerPID as String] as! Int
-                    let windowName =
-                        window[kCGWindowName as String] as? String ?? "未知窗口"
-
-                    if windowOwnerPID < 1500 {
-                        continue
+            VStack {
+                VStack {
+                    Button("获取当前系统所有窗口信息") {
+                        windowInfo = accessibilityManager.getWindowsListInfo()
+                        windowDisplayMode = .allWindows
                     }
 
-                    if let frontmostApp = NSWorkspace.shared
-                        .frontmostApplication
-                    {
-                        print(frontmostApp)
-                        print("Active app: \(frontmostApp.localizedName ?? "")")
-                    }
+                    HStack {
+                        TextField("输入进程 PID", text: $inputPID)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 120)
 
-                    print("窗口名称: \(windowName)")
-                    print("Window Number: \(windowNumber)")
-                    print("进程 PID: \(windowOwnerPID)")
-                    print("进程名称: \(windowOwnerName ?? "未知")")
-                    print("-------------------")
+                        Button("根据PID获取窗口信息") {
+                            if let pid = pid_t(inputPID) {
+                                accessibilityManager.getWindowInfoByPID(pid)
+                                windowDisplayMode = .pidWindow
+                            }
+                        }
+                    }
                 }
+
+                ScrollView {
+                    if windowDisplayMode == .allWindows {
+                        Text(windowInfo)
+                            .font(.system(.body, design: .monospaced))
+                            // .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)  // 添加此行启用文本选择
+                    } else if windowDisplayMode == .pidWindow {
+                        Text(accessibilityManager.accessibilityInfo)
+                            // .frame(maxWidth: .infinity, alignment: .leading)
+                            .textSelection(.enabled)  // 添加此行启用文本选择
+                    }
+                }
+                .frame(height: 200)  // 添加固定高度
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(8)
             }
 
             VStack {
@@ -114,46 +125,6 @@ struct ContentView: View {
                 Text("Window ID: \(accessibilityManager.focusedWindowID)")
             }
             .padding()
-
-            HStack {
-                TextField("输入进程 PID", text: $inputPID)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .frame(width: 120)
-
-                Button("根据PID获取窗口信息") {
-                    if let pid = pid_t(inputPID) {
-                        accessibilityManager.getWindowInfoByPID(pid)
-                    }
-                }
-            }
-
-            // 显示 Accessibility 信息
-            VStack {
-                HStack {
-                    Text("Accessibility 信息")
-                    Spacer()
-                    Button(action: {
-                        let pasteboard = NSPasteboard.general
-                        pasteboard.clearContents()
-                        pasteboard.setString(
-                            accessibilityManager.accessibilityInfo,
-                            forType: .string)
-                    }) {
-                        Image(systemName: "doc.on.doc")
-                        Text("复制")
-                    }
-                }
-                .padding(.horizontal)
-
-                ScrollView {
-                    Text(accessibilityManager.accessibilityInfo)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding()
-                        .background(Color.gray.opacity(0.1))
-                        .cornerRadius(8)
-                }
-            }
-            .frame(height: 200)
 
             // 新增截图显示区域
             Group {
