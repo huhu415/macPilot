@@ -1,6 +1,7 @@
 # MouseKeyboardControl for macOS
 
-A macOS application with HTTP that provides APIs for mouse/keyboard control and system information.
+A macOS application that provides HTTP APIs for mouse/keyboard control and system operations, 
+specifically designed for Large Language Models (LLMs) to interact with macOS systems through tool calls.
 
 ## Endpoints
 
@@ -44,6 +45,15 @@ A macOS application with HTTP that provides APIs for mouse/keyboard control and 
 
 - macOS 14.0 or higher
 - Xcode 16.2 or higher (for development)
+
+## Use Cases for LLMs
+
+This API is particularly useful for:
+- AI agents that need to automate macOS interactions
+- LLM-powered desktop automation
+- AI assistants performing system operations
+- Tool calls in LangChain, OpenAI Functions, or similar frameworks
+
 
 ## Acknowledgments
 
