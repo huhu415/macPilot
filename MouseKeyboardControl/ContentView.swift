@@ -31,8 +31,9 @@ struct ContentView: View {
     @State private var errorMessage: String = ""  // 新增状态用于错误信息
     @State private var isServerHealthy: Bool = false
     @State private var showServerAlert: Bool = false
-    @State private var inputPID: String = ""  // 新增状态变量用于存储输入的PID
-    @State private var windowInfo: String = ""
+    @State private var inputPIDString: String = ""  // 新增状态变量用于存储输入的PID
+    @State private var windowsListInfo: String = ""
+    @State private var windowStructureInfo: String = ""
     @State private var windowDisplayMode: WindowInfoDisplayMode = .none
     @StateObject private var accessibilityManager = AccessibilityManager()
 
@@ -78,46 +79,22 @@ struct ContentView: View {
                 }
             }
 
+            // 新增截图显示区域
+            Group {
+                if let screenshotImage = screenshotImage {
+                    Image(nsImage: screenshotImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: 600, maxHeight: 400)
+                } else if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                }
+            }
+            .padding()
+
             // 分割线
             Divider()
-
-            VStack {
-                VStack {
-                    Button("获取当前系统所有窗口信息") {
-                        windowInfo = accessibilityManager.getWindowsListInfo()
-                        windowDisplayMode = .allWindows
-                    }
-
-                    HStack {
-                        TextField("输入进程 PID", text: $inputPID)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .frame(width: 120)
-
-                        Button("根据PID获取窗口信息") {
-                            if let pid = pid_t(inputPID) {
-                                accessibilityManager.getWindowInfoByPID(pid)
-                                windowDisplayMode = .pidWindow
-                            }
-                        }
-                    }
-                }
-
-                ScrollView {
-                    if windowDisplayMode == .allWindows {
-                        Text(windowInfo)
-                            .font(.system(.body, design: .monospaced))
-                            // .frame(maxWidth: .infinity, alignment: .leading)
-                            .textSelection(.enabled)  // 添加此行启用文本选择
-                    } else if windowDisplayMode == .pidWindow {
-                        Text(accessibilityManager.accessibilityInfo)
-                            // .frame(maxWidth: .infinity, alignment: .leading)
-                            .textSelection(.enabled)  // 添加此行启用文本选择
-                    }
-                }
-                .frame(height: 200)  // 添加固定高度
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(8)
-            }
 
             VStack {
                 Text("当前应用: \(accessibilityManager.focusedAppName)")
@@ -126,19 +103,57 @@ struct ContentView: View {
             }
             .padding()
 
-            // 新增截图显示区域
-            Group {
-                if let screenshotImage = screenshotImage {
-                    Image(nsImage: screenshotImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 300)
-                } else if !errorMessage.isEmpty {
-                    Text(errorMessage)
-                        .foregroundColor(.red)
+            VStack {
+                HStack {
+                    Button("获取当前系统窗口列表") {
+                        windowsListInfo =
+                            accessibilityManager.getWindowsListInfo()
+                        windowDisplayMode = .allWindows
+                    }
+
+                    Divider()
+                        .frame(height: 30)
+
+                    VStack {
+                        TextField("输入进程 PID", text: $inputPIDString)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .frame(width: 120)
+
+                        Button("根据PID获取窗口结构") {
+                            if let pid = pid_t(inputPIDString) {
+                                windowStructureInfo =
+                                    accessibilityManager.getWindowInfoByPID(pid)
+                                windowDisplayMode = .pidWindow
+                            }
+                        }
+                    }
                 }
+                .padding(.horizontal)
+
+                ScrollView {
+                    switch windowDisplayMode {
+                    case .allWindows:
+                        Text(windowsListInfo)
+                            .font(.system(.body, design: .monospaced))
+                            .textSelection(.enabled)
+                            .frame(maxHeight: .infinity)
+                            .frame(maxWidth: .infinity)
+                    case .pidWindow:
+                        Text(windowStructureInfo)
+                            .font(.system(.body, design: .monospaced))
+                            .textSelection(.enabled)
+                            .frame(maxHeight: .infinity)
+                            .frame(maxWidth: .infinity)
+                    case .none:
+                        Text("请选择显示模式")
+                            .foregroundColor(.gray)
+                            .frame(maxHeight: .infinity)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(12)
             }
-            .padding()
         }
         .padding()
         .onAppear {
