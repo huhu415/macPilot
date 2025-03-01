@@ -32,7 +32,7 @@ struct ContentView: View {
     @State private var isServerHealthy: Bool = false
     @State private var showServerAlert: Bool = false
     @State private var inputPIDString: String = ""  // 新增状态变量用于存储输入的PID
-    @State private var windowsListInfo: String = ""
+    @State private var windowsInfoList: String = ""
     @State private var windowStructureInfo: String = ""
     @State private var windowDisplayMode: WindowInfoDisplayMode = .none
     @StateObject private var accessibilityManager = AccessibilityManager()
@@ -106,7 +106,7 @@ struct ContentView: View {
             VStack {
                 HStack {
                     Button("获取当前系统窗口列表") {
-                        windowsListInfo =
+                        windowsInfoList =
                             accessibilityManager.getWindowsListInfo()
                         windowDisplayMode = .allWindows
                     }
@@ -133,7 +133,7 @@ struct ContentView: View {
                 ScrollView {
                     switch windowDisplayMode {
                     case .allWindows:
-                        Text(windowsListInfo)
+                        Text(windowsInfoList)
                             .font(.system(.body, design: .monospaced))
                             .textSelection(.enabled)
                             .frame(maxHeight: .infinity)
