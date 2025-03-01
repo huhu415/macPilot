@@ -17,7 +17,7 @@ class ServerManager {
         }
 
         // GEY 获取鼠标位置, x和y是逻辑坐标, screen里面的就是屏幕的真实分辨率和缩放比例
-        server?["/cursor_position"] = { request in
+        server?["/cursor"] = { request in
             let position = InputControl.getCurrentMousePosition()
             let mainScreen = NSScreen.main
             let response: [String: Any] = [
@@ -32,7 +32,9 @@ class ServerManager {
 
             guard
                 let jsonData = try? JSONSerialization.data(
-                    withJSONObject: response),
+                    withJSONObject: response,
+                    options: [.prettyPrinted, .sortedKeys]
+                    ),
                 let jsonString = String(data: jsonData, encoding: .utf8)
             else {
                 return .internalServerError
@@ -41,26 +43,19 @@ class ServerManager {
             return HttpResponse.ok(.text(jsonString))
         }
 
-        // POST 移动鼠标位置. x和y是逻辑坐标, 不是真实的屏幕分辨率坐标, 可以是int或string
-        server?["/move_mouse"] = { request in
-            let bodyData = Data(request.body)
-            let json =
-                try? JSONSerialization.jsonObject(with: bodyData)
-                as? [String: Any]
-            // 处理字符串或数字类型的坐标值
-            let x =
-                (json?["x"] as? Int)
-                ?? (json?["x"] as? String).flatMap(Int.init)
-            let y =
-                (json?["y"] as? Int)
-                ?? (json?["y"] as? String).flatMap(Int.init)
-
-            InputControl.moveMouse(to: CGPoint(x: x ?? 0, y: y ?? 0))
-            return .ok(.text("Mouse moved to \(x ?? 0), \(y ?? 0)"))
+        // GET 移动鼠标位置. x和y是逻辑坐标, 不是真实的屏幕分辨率坐标 
+        // 左上角为原点, 向右为x轴, 向下为y轴
+        server?["/cursor/move"] = { request in
+            // 从查询参数中获取x和y坐标
+            let x = Double(request.queryParams.first { $0.0 == "x" }?.1 ?? "0") ?? 0
+            let y = Double(request.queryParams.first { $0.0 == "y" }?.1 ?? "0") ?? 0
+            
+            InputControl.moveMouse(to: CGPoint(x: x, y: y))
+            return .ok(.text("Mouse moved to \(x), \(y)"))
         }
 
         // GET 点击鼠标
-        server?["/click_mouse"] = { request in
+        server?["/cursor/click"] = { request in
             InputControl.mouseClick(at: InputControl.getCurrentMousePosition())
             return .ok(.text("Mouse clicked"))
         }
@@ -174,7 +169,9 @@ class ServerManager {
 
             guard
                 let jsonData = try? JSONSerialization.data(
-                    withJSONObject: response)
+                    withJSONObject: response,
+                    options: [.prettyPrinted, .sortedKeys]
+                )
             else {
                 return .internalServerError
             }
@@ -185,79 +182,90 @@ class ServerManager {
                 .data(jsonData, contentType: "application/json"))
         }
 
-        // POST 打开应用的路由, type: bundleId or appName, value: xxxx
-        server?["/open_app"] = { request in
-            let bodyData = Data(request.body)
-            guard
-                let json = try? JSONSerialization.jsonObject(
-                    with: bodyData, options: []) as? [String: Any],
-                let type = json["type"] as? String,
-                let value = json["value"] as? String
-            else {
-                return .badRequest(.text("Invalid request format"))
+        // GET /apps/launch?bundleId=xxx 或 /apps/launch?appName=xxx
+        server?["/apps/launch"] = { request in
+            // 获取查询参数
+            let bundleId = request.queryParams.first { $0.0 == "bundleId" }?.1
+            let appName = request.queryParams.first { $0.0 == "appName" }?.1
+            
+            guard bundleId != nil || appName != nil else {
+                return .badRequest(.text("Missing required parameter: either 'bundleId' or 'appName' must be provided"))
             }
-
-            let bundleIdValueEnd: String?
-
-            switch type {
-            case "bundleId":
-                bundleIdValueEnd = value
-            case "appName":
+            
+            let finalBundleId: String?
+            
+            if let bundleId = bundleId {
+                finalBundleId = bundleId
+            } else if let appName = appName {
                 let apps = getInstalledApplications()
-                bundleIdValueEnd =
-                    apps.first {
-                        $0.name.lowercased() == value.lowercased()
-                    }?.bundleId
-
-                guard bundleIdValueEnd != nil else {
-                    return .badRequest(.text("Application not found: \(value)"))
+                finalBundleId = apps.first {
+                    $0.name.lowercased() == appName.lowercased()
+                }?.bundleId
+                
+                guard finalBundleId != nil else {
+                    return .notFound
                 }
-            default:
-                return .badRequest(.text("Invalid request format"))
+            } else {
+                return .badRequest(.text("Invalid parameters"))
             }
-
+            
             guard
                 let appUrl = NSWorkspace.shared.urlForApplication(
-                    withBundleIdentifier: bundleIdValueEnd!)
+                    withBundleIdentifier: finalBundleId!)
             else {
-                return .badRequest(
-                    .text(
-                        "Application URL not found for identifier: \(bundleIdValueEnd!)"
-                    ))
+                return .notFound
             }
-
+            
             NSWorkspace.shared.openApplication(
                 at: appUrl, configuration: NSWorkspace.OpenConfiguration()
             ) { app, error in
                 if let error = error {
-                    print("打开应用失败: \(error.localizedDescription)")
+                    print("Failed to launch application: \(error.localizedDescription)")
                 } else {
-                    print("成功打开应用: \(app?.bundleIdentifier ?? "")")
+                    print("Successfully launched application: \(app?.bundleIdentifier ?? "")")
                 }
             }
-
-            return .ok(.text("Application launch request received"))
+            
+            return .ok(.text("Application launch initiated"))
         }
 
         // GET 获取应用列表
-        server?["/list_apps"] = { request in
+        server?["/apps"] = { request in
             let apps = getInstalledApplications()
             let appList = apps.map {
-                ["name": $0.name, "bundleId": $0.bundleId]
+                ["appName": $0.name, "bundleId": $0.bundleId]
             }
 
             guard
                 let jsonData = try? JSONSerialization.data(
-                    withJSONObject: appList)
+                    withJSONObject: appList,
+                    options: [.prettyPrinted, .sortedKeys]
+                    )
             else {
                 return .internalServerError
             }
             return .ok(.data(jsonData, contentType: "application/json"))
         }
 
-        // GET 获取当前聚焦窗口信息
-        server?["/focused_window_info"] = { request in
+        // GET 获取窗口列表
+        server?["/windows"] = { request in
             let accessibilityManager = AccessibilityManager()
+            let jsonString = accessibilityManager.getWindowsListInfo()
+            return .ok(.data(jsonString.data(using: .utf8)!, contentType: "application/json"))
+        }
+
+        // GET 获取窗口信息
+        server?["/windows/info"] = { request in
+            let accessibilityManager = AccessibilityManager()
+            
+            if let pidString = request.queryParams.first(where: { $0.0 == "pid" })?.1,
+               let pid = pid_t(pidString) {
+                print("获取指定进程窗口信息: \(pid)")
+                let jsonString = accessibilityManager.getWindowInfoByPID(pid)
+                return .ok(.data(jsonString.data(using: .utf8)!, contentType: "application/json"))
+            }
+            
+            // 获取当前焦点窗口信息
             let jsonString = accessibilityManager.getWindowStructure()
             return .ok(.data(jsonString.data(using: .utf8)!, contentType: "application/json"))
         }
