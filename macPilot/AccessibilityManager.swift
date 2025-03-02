@@ -35,7 +35,7 @@ class AccessibilityManager: ObservableObject {
 
         case CFBooleanGetTypeID():
             // 布尔类型
-            return (key, CFBooleanGetValue(attributeValue as! CFBoolean))
+            return (key, (attributeValue as! CFBoolean) == kCFBooleanTrue)
 
         case CFNumberGetTypeID():
             // 数字类型
