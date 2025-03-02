@@ -33,9 +33,22 @@
 		CE1A36DD2D478ACF0005E564 /* macPilotUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macPilotUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		CE96194D2D7415C00083195A /* Exceptions for "macPilot" folder in "macPilot" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = CE1A36C12D478ACE0005E564 /* macPilot */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		CE1A36C42D478ACE0005E564 /* macPilot */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				CE96194D2D7415C00083195A /* Exceptions for "macPilot" folder in "macPilot" target */,
+			);
 			path = macPilot;
 			sourceTree = "<group>";
 		};
