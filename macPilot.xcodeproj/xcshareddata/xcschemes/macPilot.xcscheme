@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CE1A36C12D478ACE0005E564"
-               BuildableName = "MouseKeyboardControl.app"
-               BlueprintName = "MouseKeyboardControl"
-               ReferencedContainer = "container:MouseKeyboardControl.xcodeproj">
+               BuildableName = "macPilot.app"
+               BlueprintName = "macPilot"
+               ReferencedContainer = "container:macPilot.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,9 +36,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CE1A36D22D478ACF0005E564"
-               BuildableName = "MouseKeyboardControlTests.xctest"
-               BlueprintName = "MouseKeyboardControlTests"
-               ReferencedContainer = "container:MouseKeyboardControl.xcodeproj">
+               BuildableName = "macPilotTests.xctest"
+               BlueprintName = "macPilotTests"
+               ReferencedContainer = "container:macPilot.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -47,9 +47,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CE1A36DC2D478ACF0005E564"
-               BuildableName = "MouseKeyboardControlUITests.xctest"
-               BlueprintName = "MouseKeyboardControlUITests"
-               ReferencedContainer = "container:MouseKeyboardControl.xcodeproj">
+               BuildableName = "macPilotUITests.xctest"
+               BlueprintName = "macPilotUITests"
+               ReferencedContainer = "container:macPilot.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -69,9 +69,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CE1A36C12D478ACE0005E564"
-            BuildableName = "MouseKeyboardControl.app"
-            BlueprintName = "MouseKeyboardControl"
-            ReferencedContainer = "container:MouseKeyboardControl.xcodeproj">
+            BuildableName = "macPilot.app"
+            BlueprintName = "macPilot"
+            ReferencedContainer = "container:macPilot.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -86,9 +86,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "CE1A36C12D478ACE0005E564"
-            BuildableName = "MouseKeyboardControl.app"
-            BlueprintName = "MouseKeyboardControl"
-            ReferencedContainer = "container:MouseKeyboardControl.xcodeproj">
+            BuildableName = "macPilot.app"
+            BlueprintName = "macPilot"
+            ReferencedContainer = "container:macPilot.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

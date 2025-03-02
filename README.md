@@ -1,4 +1,4 @@
-# MouseKeyboardControl for macOS
+# macPilot
 
 A macOS application that provides HTTP APIs for mouse/keyboard control and system operations, 
 specifically designed for **Large Language Models (LLMs)** to interact with **macOS** systems through **tool calls**.

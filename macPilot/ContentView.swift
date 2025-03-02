@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  MouseKeyboardControl
+//  macPilot
 //
 //  Created by 张重言 on 2025/1/27.
 //

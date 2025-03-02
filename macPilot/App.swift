@@ -1,6 +1,6 @@
 //
-//  MouseKeyboardControlApp.swift
-//  MouseKeyboardControl
+//  macPilotApp.swift
+//  macPilot
 //
 //  Created by 张重言 on 2025/1/27.
 //
@@ -28,7 +28,7 @@ enum PermissionType {
 }
 
 @main
-struct MouseKeyboardControlApp: App {
+struct macPilotApp: App {
     @State private var permissions: [Permission] = [
         Permission(
             type: .screenCapture,

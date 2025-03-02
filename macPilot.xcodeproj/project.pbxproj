@@ -16,50 +16,27 @@
 			containerPortal = CE1A36BA2D478ACE0005E564 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = CE1A36C12D478ACE0005E564;
-			remoteInfo = MouseKeyboardControl;
+			remoteInfo = macPilot;
 		};
 		CE1A36DE2D478ACF0005E564 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CE1A36BA2D478ACE0005E564 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = CE1A36C12D478ACE0005E564;
-			remoteInfo = MouseKeyboardControl;
+			remoteInfo = macPilot;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		CE1A36C22D478ACE0005E564 /* MouseKeyboardControl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MouseKeyboardControl.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE1A36D32D478ACF0005E564 /* MouseKeyboardControlTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MouseKeyboardControlTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE1A36DD2D478ACF0005E564 /* MouseKeyboardControlUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MouseKeyboardControlUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE1A36C22D478ACE0005E564 /* macPilot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macPilot.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE1A36D32D478ACF0005E564 /* macPilotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macPilotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE1A36DD2D478ACF0005E564 /* macPilotUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macPilotUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		CEF89F032D47B77300FA21AB /* Exceptions for "MouseKeyboardControl" folder in "MouseKeyboardControl" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = CE1A36C12D478ACE0005E564 /* MouseKeyboardControl */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		CE1A36C42D478ACE0005E564 /* MouseKeyboardControl */ = {
+		CE1A36C42D478ACE0005E564 /* macPilot */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				CEF89F032D47B77300FA21AB /* Exceptions for "MouseKeyboardControl" folder in "MouseKeyboardControl" target */,
-			);
-			path = MouseKeyboardControl;
-			sourceTree = "<group>";
-		};
-		CE1A36D62D478ACF0005E564 /* MouseKeyboardControlTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MouseKeyboardControlTests;
-			sourceTree = "<group>";
-		};
-		CE1A36E02D478ACF0005E564 /* MouseKeyboardControlUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MouseKeyboardControlUITests;
+			path = macPilot;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -93,9 +70,7 @@
 		CE1A36B92D478ACE0005E564 = {
 			isa = PBXGroup;
 			children = (
-				CE1A36C42D478ACE0005E564 /* MouseKeyboardControl */,
-				CE1A36D62D478ACF0005E564 /* MouseKeyboardControlTests */,
-				CE1A36E02D478ACF0005E564 /* MouseKeyboardControlUITests */,
+				CE1A36C42D478ACE0005E564 /* macPilot */,
 				CEE710132D47BF74009470BA /* Frameworks */,
 				CE1A36C32D478ACE0005E564 /* Products */,
 			);
@@ -104,9 +79,9 @@
 		CE1A36C32D478ACE0005E564 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CE1A36C22D478ACE0005E564 /* MouseKeyboardControl.app */,
-				CE1A36D32D478ACF0005E564 /* MouseKeyboardControlTests.xctest */,
-				CE1A36DD2D478ACF0005E564 /* MouseKeyboardControlUITests.xctest */,
+				CE1A36C22D478ACE0005E564 /* macPilot.app */,
+				CE1A36D32D478ACF0005E564 /* macPilotTests.xctest */,
+				CE1A36DD2D478ACF0005E564 /* macPilotUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,9 +96,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		CE1A36C12D478ACE0005E564 /* MouseKeyboardControl */ = {
+		CE1A36C12D478ACE0005E564 /* macPilot */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CE1A36E72D478ACF0005E564 /* Build configuration list for PBXNativeTarget "MouseKeyboardControl" */;
+			buildConfigurationList = CE1A36E72D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilot" */;
 			buildPhases = (
 				CE1A36BE2D478ACE0005E564 /* Sources */,
 				CE1A36BF2D478ACE0005E564 /* Frameworks */,
@@ -134,19 +109,19 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				CE1A36C42D478ACE0005E564 /* MouseKeyboardControl */,
+				CE1A36C42D478ACE0005E564 /* macPilot */,
 			);
-			name = MouseKeyboardControl;
+			name = macPilot;
 			packageProductDependencies = (
 				CEE710142D47BF74009470BA /* Swifter */,
 			);
-			productName = MouseKeyboardControl;
-			productReference = CE1A36C22D478ACE0005E564 /* MouseKeyboardControl.app */;
+			productName = macPilot;
+			productReference = CE1A36C22D478ACE0005E564 /* macPilot.app */;
 			productType = "com.apple.product-type.application";
 		};
-		CE1A36D22D478ACF0005E564 /* MouseKeyboardControlTests */ = {
+		CE1A36D22D478ACF0005E564 /* macPilotTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CE1A36EA2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "MouseKeyboardControlTests" */;
+			buildConfigurationList = CE1A36EA2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilotTests" */;
 			buildPhases = (
 				CE1A36CF2D478ACF0005E564 /* Sources */,
 				CE1A36D02D478ACF0005E564 /* Frameworks */,
@@ -157,19 +132,16 @@
 			dependencies = (
 				CE1A36D52D478ACF0005E564 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				CE1A36D62D478ACF0005E564 /* MouseKeyboardControlTests */,
-			);
-			name = MouseKeyboardControlTests;
+			name = macPilotTests;
 			packageProductDependencies = (
 			);
-			productName = MouseKeyboardControlTests;
-			productReference = CE1A36D32D478ACF0005E564 /* MouseKeyboardControlTests.xctest */;
+			productName = macPilotTests;
+			productReference = CE1A36D32D478ACF0005E564 /* macPilotTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		CE1A36DC2D478ACF0005E564 /* MouseKeyboardControlUITests */ = {
+		CE1A36DC2D478ACF0005E564 /* macPilotUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CE1A36ED2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "MouseKeyboardControlUITests" */;
+			buildConfigurationList = CE1A36ED2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilotUITests" */;
 			buildPhases = (
 				CE1A36D92D478ACF0005E564 /* Sources */,
 				CE1A36DA2D478ACF0005E564 /* Frameworks */,
@@ -180,14 +152,11 @@
 			dependencies = (
 				CE1A36DF2D478ACF0005E564 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				CE1A36E02D478ACF0005E564 /* MouseKeyboardControlUITests */,
-			);
-			name = MouseKeyboardControlUITests;
+			name = macPilotUITests;
 			packageProductDependencies = (
 			);
-			productName = MouseKeyboardControlUITests;
-			productReference = CE1A36DD2D478ACF0005E564 /* MouseKeyboardControlUITests.xctest */;
+			productName = macPilotUITests;
+			productReference = CE1A36DD2D478ACF0005E564 /* macPilotUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -213,7 +182,7 @@
 					};
 				};
 			};
-			buildConfigurationList = CE1A36BD2D478ACE0005E564 /* Build configuration list for PBXProject "MouseKeyboardControl" */;
+			buildConfigurationList = CE1A36BD2D478ACE0005E564 /* Build configuration list for PBXProject "macPilot" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -230,9 +199,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				CE1A36C12D478ACE0005E564 /* MouseKeyboardControl */,
-				CE1A36D22D478ACF0005E564 /* MouseKeyboardControlTests */,
-				CE1A36DC2D478ACF0005E564 /* MouseKeyboardControlUITests */,
+				CE1A36C12D478ACE0005E564 /* macPilot */,
+				CE1A36D22D478ACF0005E564 /* macPilotTests */,
+				CE1A36DC2D478ACF0005E564 /* macPilotUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -288,12 +257,12 @@
 /* Begin PBXTargetDependency section */
 		CE1A36D52D478ACF0005E564 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CE1A36C12D478ACE0005E564 /* MouseKeyboardControl */;
+			target = CE1A36C12D478ACE0005E564 /* macPilot */;
 			targetProxy = CE1A36D42D478ACF0005E564 /* PBXContainerItemProxy */;
 		};
 		CE1A36DF2D478ACF0005E564 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = CE1A36C12D478ACE0005E564 /* MouseKeyboardControl */;
+			target = CE1A36C12D478ACE0005E564 /* macPilot */;
 			targetProxy = CE1A36DE2D478ACF0005E564 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -423,25 +392,26 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_ENTITLEMENTS = MouseKeyboardControl/MouseKeyboardControl.entitlements;
+				CODE_SIGN_ENTITLEMENTS = macPilot/macPilot.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MouseKeyboardControl/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"macPilot/Preview Content\"";
 				DEVELOPMENT_TEAM = AQHBV8AC8Z;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MouseKeyboardControl/Info.plist;
+				INFOPLIST_FILE = macPilot/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "需要访问本地网络以启动HTTP服务器";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = huhu.MouseKeyboardControl;
+				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilot;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -454,25 +424,26 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
-				CODE_SIGN_ENTITLEMENTS = MouseKeyboardControl/MouseKeyboardControlRelease.entitlements;
+				CODE_SIGN_ENTITLEMENTS = macPilot/macPilotRelease.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MouseKeyboardControl/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"macPilot/Preview Content\"";
 				DEVELOPMENT_TEAM = AQHBV8AC8Z;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = MouseKeyboardControl/Info.plist;
+				INFOPLIST_FILE = macPilot/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "需要访问本地网络以启动HTTP服务器";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = huhu.MouseKeyboardControl;
+				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilot;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -489,11 +460,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = huhu.MouseKeyboardControlTests;
+				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilotTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MouseKeyboardControl.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MouseKeyboardControl";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/macPilot.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/macPilot";
 			};
 			name = Debug;
 		};
@@ -507,11 +478,11 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = huhu.MouseKeyboardControlTests;
+				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilotTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MouseKeyboardControl.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MouseKeyboardControl";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/macPilot.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/macPilot";
 			};
 			name = Release;
 		};
@@ -523,11 +494,11 @@
 				DEVELOPMENT_TEAM = AQHBV8AC8Z;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = huhu.MouseKeyboardControlUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilotUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = MouseKeyboardControl;
+				TEST_TARGET_NAME = macPilot;
 			};
 			name = Debug;
 		};
@@ -539,18 +510,18 @@
 				DEVELOPMENT_TEAM = AQHBV8AC8Z;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = huhu.MouseKeyboardControlUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilotUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = MouseKeyboardControl;
+				TEST_TARGET_NAME = macPilot;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		CE1A36BD2D478ACE0005E564 /* Build configuration list for PBXProject "MouseKeyboardControl" */ = {
+		CE1A36BD2D478ACE0005E564 /* Build configuration list for PBXProject "macPilot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE1A36E52D478ACF0005E564 /* Debug */,
@@ -559,7 +530,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CE1A36E72D478ACF0005E564 /* Build configuration list for PBXNativeTarget "MouseKeyboardControl" */ = {
+		CE1A36E72D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilot" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE1A36E82D478ACF0005E564 /* Debug */,
@@ -568,7 +539,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CE1A36EA2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "MouseKeyboardControlTests" */ = {
+		CE1A36EA2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilotTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE1A36EB2D478ACF0005E564 /* Debug */,
@@ -577,7 +548,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CE1A36ED2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "MouseKeyboardControlUITests" */ = {
+		CE1A36ED2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilotUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				CE1A36EE2D478ACF0005E564 /* Debug */,
