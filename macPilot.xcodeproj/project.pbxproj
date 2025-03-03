@@ -11,14 +11,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		CE1A36D42D478ACF0005E564 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = CE1A36BA2D478ACE0005E564 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = CE1A36C12D478ACE0005E564;
-			remoteInfo = macPilot;
-		};
-		CE1A36DE2D478ACF0005E564 /* PBXContainerItemProxy */ = {
+		CEE3BDE52D7600B0007C2381 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = CE1A36BA2D478ACE0005E564 /* Project object */;
 			proxyType = 1;
@@ -29,8 +22,7 @@
 
 /* Begin PBXFileReference section */
 		CE1A36C22D478ACE0005E564 /* macPilot.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macPilot.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE1A36D32D478ACF0005E564 /* macPilotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macPilotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE1A36DD2D478ACF0005E564 /* macPilotUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macPilotUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEE3BDE12D7600B0007C2381 /* macPilotTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = macPilotTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -52,6 +44,11 @@
 			path = macPilot;
 			sourceTree = "<group>";
 		};
+		CEE3BDE22D7600B0007C2381 /* macPilotTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = macPilotTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,14 +60,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE1A36D02D478ACF0005E564 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE1A36DA2D478ACF0005E564 /* Frameworks */ = {
+		CEE3BDDE2D7600B0007C2381 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -84,6 +74,7 @@
 			isa = PBXGroup;
 			children = (
 				CE1A36C42D478ACE0005E564 /* macPilot */,
+				CEE3BDE22D7600B0007C2381 /* macPilotTests */,
 				CEE710132D47BF74009470BA /* Frameworks */,
 				CE1A36C32D478ACE0005E564 /* Products */,
 			);
@@ -93,8 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				CE1A36C22D478ACE0005E564 /* macPilot.app */,
-				CE1A36D32D478ACF0005E564 /* macPilotTests.xctest */,
-				CE1A36DD2D478ACF0005E564 /* macPilotUITests.xctest */,
+				CEE3BDE12D7600B0007C2381 /* macPilotTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -132,45 +122,28 @@
 			productReference = CE1A36C22D478ACE0005E564 /* macPilot.app */;
 			productType = "com.apple.product-type.application";
 		};
-		CE1A36D22D478ACF0005E564 /* macPilotTests */ = {
+		CEE3BDE02D7600B0007C2381 /* macPilotTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CE1A36EA2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilotTests" */;
+			buildConfigurationList = CEE3BDE72D7600B0007C2381 /* Build configuration list for PBXNativeTarget "macPilotTests" */;
 			buildPhases = (
-				CE1A36CF2D478ACF0005E564 /* Sources */,
-				CE1A36D02D478ACF0005E564 /* Frameworks */,
-				CE1A36D12D478ACF0005E564 /* Resources */,
+				CEE3BDDD2D7600B0007C2381 /* Sources */,
+				CEE3BDDE2D7600B0007C2381 /* Frameworks */,
+				CEE3BDDF2D7600B0007C2381 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				CE1A36D52D478ACF0005E564 /* PBXTargetDependency */,
+				CEE3BDE62D7600B0007C2381 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				CEE3BDE22D7600B0007C2381 /* macPilotTests */,
 			);
 			name = macPilotTests;
 			packageProductDependencies = (
 			);
 			productName = macPilotTests;
-			productReference = CE1A36D32D478ACF0005E564 /* macPilotTests.xctest */;
+			productReference = CEE3BDE12D7600B0007C2381 /* macPilotTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		CE1A36DC2D478ACF0005E564 /* macPilotUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = CE1A36ED2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilotUITests" */;
-			buildPhases = (
-				CE1A36D92D478ACF0005E564 /* Sources */,
-				CE1A36DA2D478ACF0005E564 /* Frameworks */,
-				CE1A36DB2D478ACF0005E564 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				CE1A36DF2D478ACF0005E564 /* PBXTargetDependency */,
-			);
-			name = macPilotUITests;
-			packageProductDependencies = (
-			);
-			productName = macPilotUITests;
-			productReference = CE1A36DD2D478ACF0005E564 /* macPilotUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -185,11 +158,7 @@
 					CE1A36C12D478ACE0005E564 = {
 						CreatedOnToolsVersion = 16.2;
 					};
-					CE1A36D22D478ACF0005E564 = {
-						CreatedOnToolsVersion = 16.2;
-						TestTargetID = CE1A36C12D478ACE0005E564;
-					};
-					CE1A36DC2D478ACF0005E564 = {
+					CEE3BDE02D7600B0007C2381 = {
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = CE1A36C12D478ACE0005E564;
 					};
@@ -213,8 +182,7 @@
 			projectRoot = "";
 			targets = (
 				CE1A36C12D478ACE0005E564 /* macPilot */,
-				CE1A36D22D478ACF0005E564 /* macPilotTests */,
-				CE1A36DC2D478ACF0005E564 /* macPilotUITests */,
+				CEE3BDE02D7600B0007C2381 /* macPilotTests */,
 			);
 		};
 /* End PBXProject section */
@@ -227,14 +195,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE1A36D12D478ACF0005E564 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE1A36DB2D478ACF0005E564 /* Resources */ = {
+		CEE3BDDF2D7600B0007C2381 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -251,14 +212,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE1A36CF2D478ACF0005E564 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE1A36D92D478ACF0005E564 /* Sources */ = {
+		CEE3BDDD2D7600B0007C2381 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -268,15 +222,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		CE1A36D52D478ACF0005E564 /* PBXTargetDependency */ = {
+		CEE3BDE62D7600B0007C2381 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = CE1A36C12D478ACE0005E564 /* macPilot */;
-			targetProxy = CE1A36D42D478ACF0005E564 /* PBXContainerItemProxy */;
-		};
-		CE1A36DF2D478ACF0005E564 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = CE1A36C12D478ACE0005E564 /* macPilot */;
-			targetProxy = CE1A36DE2D478ACF0005E564 /* PBXContainerItemProxy */;
+			targetProxy = CEE3BDE52D7600B0007C2381 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -463,7 +412,7 @@
 			};
 			name = Release;
 		};
-		CE1A36EB2D478ACF0005E564 /* Debug */ = {
+		CEE3BDE82D7600B0007C2381 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -471,7 +420,6 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = AQHBV8AC8Z;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilotTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -481,7 +429,7 @@
 			};
 			name = Debug;
 		};
-		CE1A36EC2D478ACF0005E564 /* Release */ = {
+		CEE3BDE92D7600B0007C2381 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -489,45 +437,12 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = AQHBV8AC8Z;
 				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.2;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilotTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/macPilot.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/macPilot";
-			};
-			name = Release;
-		};
-		CE1A36EE2D478ACF0005E564 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AQHBV8AC8Z;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilotUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = macPilot;
-			};
-			name = Debug;
-		};
-		CE1A36EF2D478ACF0005E564 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = AQHBV8AC8Z;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = huhu.macPilotUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = macPilot;
 			};
 			name = Release;
 		};
@@ -552,20 +467,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CE1A36EA2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilotTests" */ = {
+		CEE3BDE72D7600B0007C2381 /* Build configuration list for PBXNativeTarget "macPilotTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CE1A36EB2D478ACF0005E564 /* Debug */,
-				CE1A36EC2D478ACF0005E564 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CE1A36ED2D478ACF0005E564 /* Build configuration list for PBXNativeTarget "macPilotUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CE1A36EE2D478ACF0005E564 /* Debug */,
-				CE1A36EF2D478ACF0005E564 /* Release */,
+				CEE3BDE82D7600B0007C2381 /* Debug */,
+				CEE3BDE92D7600B0007C2381 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
