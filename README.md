@@ -58,3 +58,9 @@ This API is particularly useful for:
 ## Acknowledgments
 
 Special thanks to MillanK from the osWorld team - this project wouldn't exist without his inspiration and guidance. 
+
+
+Before running the app, you need to allow unsigned applications to run:
+```bash
+sudo spctl --master-disable
+```
