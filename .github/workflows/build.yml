@@ -1,0 +1,40 @@
+name: Build App
+
+on:
+  push:
+    branches: [ main ]  # 当推送到 main 分支时触发
+  pull_request:
+    branches: [ main ]  # 当创建针对 main 分支的 PR 时触发
+  workflow_dispatch:    # 支持手动触发
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-latest  # 使用最新的 macOS runner
+    
+    steps:
+      - name: ⬇️ 检出代码
+        uses: actions/checkout@v4
+        
+      - name: 🔧 选择 Xcode
+        run: sudo xcode-select -s "/Applications/Xcode.app"
+        
+      - name: 🛠️ 构建应用
+        run: |
+          xcodebuild \
+            -project macPilot.xcodeproj \
+            -scheme "macPilot" \
+            -configuration Release \
+            -destination 'generic/platform=macOS' \
+            clean build
+            
+      - name: 📦 打包应用
+        run: |
+          cd build/Release
+          zip -r ../../macPilot.zip macPilot.app
+          
+      - name: ⬆️ 上传构建产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: macPilot
+          path: macPilot.zip 
