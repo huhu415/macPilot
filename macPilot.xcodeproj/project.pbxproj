@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CEB6162F2D7A089500047F02 /* MCPServer in Frameworks */ = {isa = PBXBuildFile; productRef = CEB6162E2D7A089500047F02 /* MCPServer */; };
 		CEE710152D47BF74009470BA /* Swifter in Frameworks */ = {isa = PBXBuildFile; productRef = CEE710142D47BF74009470BA /* Swifter */; };
 /* End PBXBuildFile section */
 
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEB6162F2D7A089500047F02 /* MCPServer in Frameworks */,
 				CEE710152D47BF74009470BA /* Swifter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -117,6 +119,7 @@
 			name = macPilot;
 			packageProductDependencies = (
 				CEE710142D47BF74009470BA /* Swifter */,
+				CEB6162E2D7A089500047F02 /* MCPServer */,
 			);
 			productName = macPilot;
 			productReference = CE1A36C22D478ACE0005E564 /* macPilot.app */;
@@ -175,6 +178,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				CEF89F072D47BF2B00FA21AB /* XCRemoteSwiftPackageReference "swifter" */,
+				CEB6162D2D7A089500047F02 /* XCRemoteSwiftPackageReference "mcp-swift-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CE1A36C32D478ACE0005E564 /* Products */;
@@ -481,6 +485,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		CEB6162D2D7A089500047F02 /* XCRemoteSwiftPackageReference "mcp-swift-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gsabran/mcp-swift-sdk";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		CEF89F072D47BF2B00FA21AB /* XCRemoteSwiftPackageReference "swifter" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/httpswift/swifter.git";
@@ -492,6 +504,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		CEB6162E2D7A089500047F02 /* MCPServer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEB6162D2D7A089500047F02 /* XCRemoteSwiftPackageReference "mcp-swift-sdk" */;
+			productName = MCPServer;
+		};
 		CEE710142D47BF74009470BA /* Swifter */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CEF89F072D47BF2B00FA21AB /* XCRemoteSwiftPackageReference "swifter" */;
