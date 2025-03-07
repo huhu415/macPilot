@@ -166,6 +166,15 @@ struct ContentView: View {
                 print("❌ 服务器启动失败: \(error.localizedDescription)")
             }
 
+            // 使用 Task 包装异步调用
+            Task {
+                do {
+                    try await MCPServerManager.shared.startServer()
+                } catch {
+                    print("Server start failed: \(error)")
+                }
+            }
+
             // 添加定时器获取焦点窗口信息
             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
                 mousePosition = InputControl.getCurrentMousePosition()
