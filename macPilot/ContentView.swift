@@ -9,6 +9,9 @@ import AVFoundation
 import ScreenCaptureKit
 import SwiftUI
 import Swifter
+import Foundation
+import JSONSchemaBuilder
+import MCPServer
 
 enum KeyCode: CGKeyCode {
     case space = 49
@@ -157,29 +160,35 @@ struct ContentView: View {
         }
         .padding()
         .onAppear {
-            // 启动 HTTP 服务器
-            let server = ServerManager.shared.serverInit()
-            do {
-                try server?.start(8080)
-                print("✅ 服务器启动成功")
-            } catch {
-                print("❌ 服务器启动失败: \(error.localizedDescription)")
-            }
+            // 修改服务器启动方式
+             Task {
+                 do {
+                    let capabilities = ServerCapabilityHandlers(tools: [
+                        Tool(name: "repeat") { (input: ToolInput) in
+                            [.text(.init(text: input.text))]
+                        }
+                    ])
 
-            // 使用 Task 包装异步调用
-            Task {
-                do {
-                    try await MCPServerManager.shared.startServer()
-                } catch {
-                    print("Server start failed: \(error)")
-                }
-            }
+                     // 确保有正确的权限设置
+                     let transport = Transport.stdio()
+                     let server = try await MCPServer(
+                         info: Implementation(name: "macPilot", version: "1.0.0"),
+                         capabilities: capabilities,
+                         transport: transport
+                     )
+                    
+                     // 直接等待服务器断开连接
+                     try await server.waitForDisconnection()
+                 } catch {
+                     print("服务器启动失败: \(error)")
+                 }
+             }
 
-            // 添加定时器获取焦点窗口信息
-            Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-                mousePosition = InputControl.getCurrentMousePosition()
-                accessibilityManager.getFocusedWindowInfo()
-            }
+             // 添加定时器获取焦点窗口信息
+             Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
+                 mousePosition = InputControl.getCurrentMousePosition()
+                 accessibilityManager.getFocusedWindowInfo()
+             }
         }
     }
 
