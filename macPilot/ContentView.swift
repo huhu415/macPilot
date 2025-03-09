@@ -6,6 +6,9 @@
 //
 
 import AVFoundation
+import Foundation
+import JSONSchemaBuilder
+import MCPServer
 import ScreenCaptureKit
 import SwiftUI
 import Swifter
@@ -157,21 +160,28 @@ struct ContentView: View {
         }
         .padding()
         .onAppear {
-            // 启动 HTTP 服务器
-            let server = ServerManager.shared.serverInit()
-            do {
-                try server?.start(8080)
-                print("✅ 服务器启动成功")
-            } catch {
-                print("❌ 服务器启动失败: \(error.localizedDescription)")
-            }
-
-            // 使用 Task 包装异步调用
+            // 修改服务器启动方式
             Task {
                 do {
-                    try await MCPServerManager.shared.startServer()
+                    let capabilities = ServerCapabilityHandlers(tools: [
+                        Tool(name: "repeat") { (input: ToolInput) in
+                            [.text(.init(text: input.text))]
+                        }
+                    ])
+
+                    // 确保有正确的权限设置
+                    let transport = Transport.stdio()
+                    let server = try await MCPServer(
+                        info: Implementation(
+                            name: "macPilot", version: "1.0.0"),
+                        capabilities: capabilities,
+                        transport: transport
+                    )
+
+                    // 直接等待服务器断开连接
+                    try await server.waitForDisconnection()
                 } catch {
-                    print("Server start failed: \(error)")
+                    print("服务器启动失败: \(error)")
                 }
             }
 
